@@ -1,0 +1,1 @@
+import{accountSummary}from"./_lib/alpaca.js";import{fail,method,send}from"./_lib/http.js";export default async function handler(req,res){try{method(req,["GET"]);send(res,200,{ok:true,account:await accountSummary()})}catch(e){fail(res,e)}}
