@@ -22,8 +22,6 @@ export default async function handler(req,res){
   try{
     if(!authorized(req)){const e=new Error("Automation authorization required");e.status=401;throw e}
     if(process.env.STONK_AUTOTRADE_ENABLED!=="true")return send(res,200,{ok:true,enabled:false,message:"Automation is disabled"});
-    if(tradingMode()==="live"&&process.env.STONK_AUTOTRADE_LIVE!=="true"){const e=new Error("Live auto-trading is not enabled");e.status=403;throw e}
-
     const[marketClock,account,currentPositions,currentOrders]=await Promise.all([clock(),accountSummary(),positions(),openOrders()]);
     if(!marketClock?.is_open)return send(res,200,{ok:true,enabled:true,marketOpen:false,nextOpen:marketClock?.next_open,mode:"live"});
     if(account.tradingBlocked){const e=new Error("Broker reports trading is blocked");e.status=403;throw e}
