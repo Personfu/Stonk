@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
+<title>Stonk — Market Intelligence & Trading Terminal</title><link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+<header class="topbar"><div><strong>STONK</strong><span class="muted"> market intelligence terminal</span></div><div id="status" class="pill">connecting</div></header>
+<main>
+<section class="hero panel"><div><p class="eyebrow">PUBLIC MARKETS / OPTIONS / EXECUTION</p><h1>Research the market. Rank defined-risk option structures. Execute through a broker API.</h1><p class="muted">Paper-first by design. Live execution requires explicit server-side enablement and operator authorization.</p></div><form id="symbolForm"><label for="symbol">Ticker</label><div class="search"><input id="symbol" value="SPY" maxlength="8" autocomplete="off"><button>Open terminal</button></div></form></section>
+<nav class="tabs"><button data-tab="market" class="active">Market Pulse</button><button data-tab="options">Options Lab</button><button data-tab="research">SEC Research</button><button data-tab="account">Broker</button><button data-tab="automation">Automation</button></nav>
+<section id="market" class="tab panel active"><div class="section-head"><h2>Market Pulse</h2><button id="refreshMarket">Refresh</button></div><div class="grid three"><article><h3>Gainers</h3><div id="gainers" class="stack"></div></article><article><h3>Losers</h3><div id="losers" class="stack"></div></article><article><h3>Most Active</h3><div id="actives" class="stack"></div></article></div></section>
+<section id="options" class="tab panel"><div class="section-head"><div><h2>Options Lab</h2><p class="muted">Candidates are research-priority scores, not profit forecasts.</p></div><button id="scanOptions">Scan chain</button></div><div id="optionSummary" class="metrics"></div><div class="table-wrap"><table><thead><tr><th>Score</th><th>Strategy</th><th>Expiry</th><th>Limit</th><th>Max loss</th><th>Max profit</th><th>R/R</th></tr></thead><tbody id="candidates"></tbody></table></div></section>
+<section id="research" class="tab panel"><div class="section-head"><h2>SEC Research</h2><button id="loadResearch">Load filings</button></div><div id="facts" class="metrics"></div><div id="filings" class="stack"></div></section>
+<section id="account" class="tab panel"><div class="section-head"><h2>Broker Account</h2><button id="loadAccount">Refresh</button></div><div id="accountCards" class="metrics"></div><p class="muted">This view is read-only. Order submission is exposed only through the operator-authenticated server endpoint.</p></section>
+<section id="automation" class="tab panel"><h2>Automation Controls</h2><div id="automationState" class="metrics"></div><p>Automatic execution remains disabled until deployment flags explicitly enable scanning and order placement. Live mode has an additional independent acknowledgement gate.</p><p class="muted">Recommended path: paper trade first, inspect fills/slippage and strategy logs, then move to live with a small risk cap.</p></section>
+</main>
+<footer>Stonk does not guarantee returns. Options can lose 100% of premium; Stonk's automated order path accepts bounded-risk option structures only.</footer>
+<script type="module" src="/src/app.js"></script>
+</body></html>
