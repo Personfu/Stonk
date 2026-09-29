@@ -1,0 +1,4 @@
+import test from"node:test";import assert from"node:assert/strict";import{estimateOrderRisk,parseOcc}from"../api/_lib/strategy.js";
+test("parses OCC symbol",()=>{const x=parseOcc("AAPL250117C00200000");assert.equal(x.root,"AAPL");assert.equal(x.cp,"C");assert.equal(x.strike,200)});
+test("debit vertical risk equals debit paid",()=>{const o={order_class:"mleg",qty:"2",type:"limit",limit_price:"1.25",legs:[{symbol:"AAPL250117C00200000",side:"buy",position_intent:"buy_to_open"},{symbol:"AAPL250117C00210000",side:"sell",position_intent:"sell_to_open"}]};assert.deepEqual(estimateOrderRisk(o),{bounded:true,maxLoss:250})});
+test("credit vertical max loss uses width minus credit",()=>{const o={order_class:"mleg",qty:"1",type:"limit",limit_price:"-1.50",legs:[{symbol:"AAPL250117C00200000",side:"sell",position_intent:"sell_to_open"},{symbol:"AAPL250117C00210000",side:"buy",position_intent:"buy_to_open"}]};assert.deepEqual(estimateOrderRisk(o),{bounded:true,maxLoss:850})});
