@@ -1,17 +1,17 @@
 # Stonk trading architecture
 
-Stonk uses Alpaca for the first broker/data adapter because one API family covers account state, equities, listed options, option-chain snapshots with Greeks, market screeners, historical stock bars, news, corporate actions, paper trading, live trading and multi-leg options.
+Stonk uses Alpaca for the first broker/data adapter because one API family covers account state, equities, listed options, option-chain snapshots with Greeks, market screeners, historical stock bars, news, corporate actions, live trading and multi-leg options.
 
 SEC EDGAR supplies filing/fundamental research. FRED optionally supplies macro observations.
 
 ## Execution posture
 
-1. Paper is the default.
+1. Stonk is live-only; there is no paper endpoint or paper fallback.
 2. Browser code never receives broker keys or the operator secret.
 3. Public terminal views are read-only for account data and scans.
 4. `/api/order` requires an operator bearer token and accepts bounded-risk limit orders only.
-5. Live mode requires `ALPACA_TRADING_MODE=live` plus `STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY`.
-6. Automated trading adds `STONK_AUTOTRADE_ENABLED=true`; actual placement requires `STONK_AUTOTRADE_EXECUTE=true`; live automation additionally requires `STONK_AUTOTRADE_LIVE=true`.
+5. Every trading call requires `STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY`; otherwise execution fails closed.
+6. Automated live trading requires `STONK_AUTOTRADE_ENABLED=true`; actual placement additionally requires `STONK_AUTOTRADE_EXECUTE=true`.
 7. `STONK_MAX_RISK_PER_TRADE_USD` caps estimated option max loss.
 8. `STONK_MAX_DAILY_LOSS_USD` stops new automated entries after the account's current-day loss crosses the configured threshold.
 9. Existing positions and open orders suppress another automated entry in the same underlying.
@@ -31,7 +31,7 @@ The option scanner's score is not a profitability forecast. It currently combine
 
 Automation requires a directional trend instead of selecting bullish versus bearish structures from option liquidity alone.
 
-This is a deterministic baseline suitable for paper validation. A serious next model iteration should add walk-forward backtesting, transaction-cost calibration, volatility-regime features, earnings/corporate-action exclusion windows and persistent strategy/fill telemetry before live capital is expanded.
+This is a deterministic baseline for live-market research and tightly bounded execution. A serious next model iteration should add walk-forward backtesting, transaction-cost calibration, volatility-regime features, earnings/corporate-action exclusion windows and persistent strategy/fill telemetry before live capital is expanded.
 
 ## Scheduled automation
 
@@ -47,7 +47,7 @@ Example for a Vercel plan that supports a 15-minute cron cadence:
 }
 ```
 
-Vercel plan limits determine how frequently cron jobs may execute. Keep `STONK_AUTOTRADE_EXECUTE=false` during the paper-observation phase if you only want ranked candidates returned.
+Vercel plan limits determine how frequently cron jobs may execute. Keep `STONK_AUTOTRADE_EXECUTE=false` whenever you want live-market scans without order placement.
 
 ## Market-data feeds
 
@@ -67,6 +67,10 @@ Use SIP or other licensed feeds only if the account is entitled to them.
 - `/api/market`: Alpaca market movers, most-active stocks and current quotes.
 - `/api/options`: active contracts, snapshots/Greeks, underlying trend and strategy candidates.
 
-## Before enabling real money
+## Live execution requirements
 
-Do not enable real-money automation until the exact rules have been observed in paper trading across enough market regimes to measure fill quality, slippage, signal turnover, data outages, stale quotes, early assignment risk, volatility shocks, earnings gaps and strategy drift. Persisted audit logs and backtest/live reconciliation should be added before increasing risk limits.
+Stonk does not expose Alpaca's paper-trading base URL. The trading adapter always targets `https://api.alpaca.markets`.
+
+Missing live acknowledgement, missing live credentials, insufficient options approval, insufficient buying power, an exceeded daily-loss limit, a duplicate underlying exposure, a closed market, or a strategy outside the allowlist prevents new automated orders.
+
+Live execution should keep conservative risk caps until actual fill quality, slippage, signal turnover, earnings gaps, assignment behavior and strategy drift are measured from production telemetry.
