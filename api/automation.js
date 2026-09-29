@@ -1,5 +1,5 @@
 import{accountSummary,clock,openOrders,positions,optionContracts,optionSnapshots,stockBars,submitOrder,tradingMode}from"./_lib/alpaca.js";
-import{normalizeChain,scanStrategies,deriveTrendSignal,rankCandidatesForSignal,candidateToOrder,estimateOrderRisk,parseOcc}from"./_lib/strategy.js";
+import{normalizeChain,scanStrategies,deriveTrendSignal,rankCandidatesForSignal,candidateToOrder,estimateOrderRisk,requiredOptionsLevel,parseOcc}from"./_lib/strategy.js";
 import{fail,send}from"./_lib/http.js";
 
 function authorized(req){
