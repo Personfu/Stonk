@@ -3,6 +3,10 @@
   "version":"0.2.0",
   "private":true,
   "type":"module",
-  "scripts":{"dev":"vercel dev","test":"node --test","lint":"node --check src/app.js && node --check api/_lib/alpaca.js && node --check api/_lib/strategy.js"},
-  "devDependencies":{"vercel":"^50.0.0"}
+  "scripts":{
+    "dev":"vercel dev",
+    "test":"node --test",
+    "lint":"find api src test -name '*.js' -print0 | xargs -0 -n1 node --check"
+  },
+  "devDependencies":{"vercel":"^59.19.1"}
 }
