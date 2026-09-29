@@ -2,7 +2,7 @@
 
 Stonk is a public-markets research, options-analysis and broker-execution terminal.
 
-This build replaces the repository's prior README-only shell with an actual application: live/public market screens, SEC fundamentals and filings, news and corporate actions, optional FRED macro data, options-chain analytics with Greeks, broker account visibility, bounded-risk order controls and a paper-first automation runner.
+This build replaces the repository's prior README-only shell with an actual application: live/public market screens, SEC fundamentals and filings, news and corporate actions, optional FRED macro data, options-chain analytics with Greeks, broker account visibility, bounded-risk order controls and a live-only automation runner.
 
 ## Current stack
 
@@ -38,20 +38,21 @@ Shows recent symbol news, corporate actions and — when `FRED_API_KEY` is confi
 Resolves a U.S. ticker to its SEC CIK and surfaces recent 10-K, 10-Q, 8-K, proxy and foreign-issuer filings plus selected XBRL facts.
 
 ### Broker
-Shows paper/live mode, equity, day P/L, cash, buying power, options buying power, options level and trading-blocked state. Broker credentials remain server-side.
+Shows live broker mode, equity, day P/L, cash, buying power, options buying power, options level and trading-blocked state. Broker credentials remain server-side.
 
 ## Automated trading controls
 
 Automation is intentionally layered so one accidental environment-variable change cannot immediately turn the system into an unrestricted live-money bot.
 
-Default state:
+Execution posture:
 
 ```text
-ALPACA_TRADING_MODE=paper
+STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY
 STONK_AUTOTRADE_ENABLED=false
 STONK_AUTOTRADE_EXECUTE=false
-STONK_AUTOTRADE_LIVE=false
 ```
+
+Stonk has no paper-trading endpoint or paper fallback. If live acknowledgement or live broker credentials are missing, execution fails closed.
 
 The automation endpoint:
 
@@ -74,12 +75,11 @@ STONK_AUTOTRADE_ENABLED=true
 STONK_AUTOTRADE_EXECUTE=true
 ```
 
-Live trading adds two independent gates:
+Automatic live order placement additionally requires both:
 
 ```text
-ALPACA_TRADING_MODE=live
-STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY
-STONK_AUTOTRADE_LIVE=true
+STONK_AUTOTRADE_ENABLED=true
+STONK_AUTOTRADE_EXECUTE=true
 ```
 
 The order and automation endpoints also require a server-only bearer secret in `STONK_TRADING_SECRET` (or `CRON_SECRET` for the automation route when invoked by Vercel Cron).
@@ -94,7 +94,7 @@ cp .env.example .env
 npm run dev
 ```
 
-Use **paper-account Alpaca keys first**.
+Use live Alpaca brokerage credentials only. Paper-account credentials are not supported by Stonk.
 
 Tests and syntax checks:
 
@@ -118,4 +118,4 @@ npm run lint
 
 ## Risk statement
 
-No scanner can reliably identify the "most profitable" option chain in advance. Options can lose the entire premium, spreads can realize their full defined loss, market data can be delayed or stale, and paper fills can differ materially from live fills. Stonk therefore treats every result as a research candidate and keeps automated execution paper-first, bounded-risk and circuit-breaker controlled.
+No scanner can reliably identify the "most profitable" option chain in advance. Options can lose the entire premium, spreads can realize their full defined loss, and live fills can differ materially from quoted prices. Stonk therefore keeps live execution bounded-risk, limit-order based and circuit-breaker controlled.

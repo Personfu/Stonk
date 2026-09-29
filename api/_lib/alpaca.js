@@ -1,10 +1,37 @@
 const DATA="https://data.alpaca.markets";
-function keys(){const key=process.env.ALPACA_API_KEY_ID||process.env.APCA_API_KEY_ID;const secret=process.env.ALPACA_API_SECRET_KEY||process.env.APCA_API_SECRET_KEY;if(!key||!secret){const e=new Error("Alpaca credentials are not configured");e.status=503;throw e}return{key,secret}}
-export function tradingMode(){return(process.env.ALPACA_TRADING_MODE||"paper").toLowerCase()==="live"?"live":"paper"}
+const LIVE_TRADING="https://api.alpaca.markets";
+
+function keys(){
+  const key=process.env.ALPACA_API_KEY_ID||process.env.APCA_API_KEY_ID;
+  const secret=process.env.ALPACA_API_SECRET_KEY||process.env.APCA_API_SECRET_KEY;
+  if(!key||!secret){const e=new Error("Live Alpaca credentials are not configured");e.status=503;throw e}
+  return{key,secret}
+}
+
+export function tradingMode(){return"live"}
 export function liveTradingAllowed(){return process.env.STONK_ALLOW_LIVE_TRADING==="I_UNDERSTAND_REAL_MONEY"}
-export function tradingBase(){const mode=tradingMode();if(mode==="live"&&!liveTradingAllowed()){const e=new Error("Live trading is blocked by the Stonk safety gate");e.status=403;throw e}return mode==="live"?"https://api.alpaca.markets":"https://paper-api.alpaca.markets"}
-function headers(extra={}){const{key,secret}=keys();return{"APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,accept:"application/json",...extra}}
-async function request(url,options={}){const c=new AbortController();const t=setTimeout(()=>c.abort(),12000);try{const r=await fetch(url,{...options,headers:headers(options.headers),signal:c.signal});const text=await r.text();let payload=null;try{payload=text?JSON.parse(text):null}catch{payload={raw:text}}if(!r.ok){const e=new Error(payload?.message||("Alpaca request failed ("+r.status+")"));e.status=r.status;e.upstream=payload;throw e}return payload}finally{clearTimeout(t)}}
+export function tradingBase(){
+  if(!liveTradingAllowed()){const e=new Error("Live trading acknowledgement is not configured");e.status=403;throw e}
+  return LIVE_TRADING
+}
+
+function headers(extra={}){
+  const{key,secret}=keys();
+  return{"APCA-API-KEY-ID":key,"APCA-API-SECRET-KEY":secret,accept:"application/json",...extra}
+}
+
+async function request(url,options={}){
+  const c=new AbortController(),t=setTimeout(()=>c.abort(),12000);
+  try{
+    const r=await fetch(url,{...options,headers:headers(options.headers),signal:c.signal});
+    const text=await r.text();
+    let payload=null;
+    try{payload=text?JSON.parse(text):null}catch{payload={raw:text}}
+    if(!r.ok){const e=new Error(payload?.message||("Alpaca request failed ("+r.status+")"));e.status=r.status;e.upstream=payload;throw e}
+    return payload
+  }finally{clearTimeout(t)}
+}
+
 export function market(path){return request(DATA+path)}
 export function trading(path,options={}){return request(tradingBase()+path,options)}
 export function stockFeed(){return process.env.ALPACA_STOCK_DATA_FEED||"iex"}
@@ -14,7 +41,7 @@ export async function latestNews(symbol,limit=20){const q=new URLSearchParams({s
 export async function corporateActions(symbol,start,end){const q=new URLSearchParams({symbols:symbol,data_quality:"complete"});if(start)q.set("start",start);if(end)q.set("end",end);return market("/v1/corporate-actions?"+q)}
 export async function optionSnapshots(symbol,params={}){const q=new URLSearchParams({feed:optionFeed(),limit:"1000",...Object.fromEntries(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!==""))});let token="";const snapshots={};for(let page=0;page<5;page++){if(token)q.set("page_token",token);const d=await market("/v1beta1/options/snapshots/"+encodeURIComponent(symbol)+"?"+q);Object.assign(snapshots,d?.snapshots||{});token=d?.next_page_token||"";if(!token)break}return snapshots}
 export async function optionContracts(symbol,params={}){const q=new URLSearchParams({underlying_symbols:symbol,status:"active",limit:"10000",...Object.fromEntries(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!==""))});let token="";const out=[];for(let page=0;page<5;page++){if(token)q.set("page_token",token);const d=await trading("/v2/options/contracts?"+q);out.push(...(d?.option_contracts||[]));token=d?.next_page_token||"";if(!token)break}return out}
-export async function accountSummary(){const a=await trading("/v2/account");const n=v=>Number.isFinite(Number(v))?Number(v):null;return{status:a.status,currency:a.currency,equity:n(a.equity),cash:n(a.cash),buyingPower:n(a.buying_power),optionsBuyingPower:n(a.options_buying_power),optionsApprovedLevel:a.options_approved_level,optionsTradingLevel:a.options_trading_level,lastEquity:n(a.last_equity),dayPnL:n(a.equity)!=null&&n(a.last_equity)!=null?n(a.equity)-n(a.last_equity):null,patternDayTrader:a.pattern_day_trader,tradingBlocked:a.trading_blocked,transfersBlocked:a.transfers_blocked,mode:tradingMode()}}
+export async function accountSummary(){const a=await trading("/v2/account");const n=v=>Number.isFinite(Number(v))?Number(v):null;return{status:a.status,currency:a.currency,equity:n(a.equity),cash:n(a.cash),buyingPower:n(a.buying_power),optionsBuyingPower:n(a.options_buying_power),optionsApprovedLevel:a.options_approved_level,optionsTradingLevel:a.options_trading_level,lastEquity:n(a.last_equity),dayPnL:n(a.equity)!=null&&n(a.last_equity)!=null?n(a.equity)-n(a.last_equity):null,patternDayTrader:a.pattern_day_trader,tradingBlocked:a.trading_blocked,transfersBlocked:a.transfers_blocked,mode:"live"}}
 export async function clock(){return trading("/v2/clock")}
 export async function openOrders(){return trading("/v2/orders?status=open&limit=500&nested=true")}
 export async function positions(){return trading("/v2/positions")}
