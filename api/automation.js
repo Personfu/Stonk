@@ -1,4 +1,4 @@
-import{accountSummary,clock,openOrders,positions,optionContracts,optionSnapshots,stockBars,submitOrder,tradingMode}from"./_lib/alpaca.js";
+import{accountSummary,clock,openOrders,positions,optionContracts,optionSnapshots,stockBars,submitOrder}from"./_lib/alpaca.js";
 import{normalizeChain,scanStrategies,deriveTrendSignal,rankCandidatesForSignal,candidateToOrder,estimateOrderRisk,requiredOptionsLevel,parseOcc}from"./_lib/strategy.js";
 import{fail,send}from"./_lib/http.js";
 
@@ -25,13 +25,13 @@ export default async function handler(req,res){
     if(tradingMode()==="live"&&process.env.STONK_AUTOTRADE_LIVE!=="true"){const e=new Error("Live auto-trading is not enabled");e.status=403;throw e}
 
     const[marketClock,account,currentPositions,currentOrders]=await Promise.all([clock(),accountSummary(),positions(),openOrders()]);
-    if(!marketClock?.is_open)return send(res,200,{ok:true,enabled:true,marketOpen:false,nextOpen:marketClock?.next_open,mode:tradingMode()});
+    if(!marketClock?.is_open)return send(res,200,{ok:true,enabled:true,marketOpen:false,nextOpen:marketClock?.next_open,mode:"live"});
     if(account.tradingBlocked){const e=new Error("Broker reports trading is blocked");e.status=403;throw e}
     if(Number(account.optionsTradingLevel||0)===0){const e=new Error("Options trading is disabled on the broker account");e.status=403;throw e}
 
     const dailyLossCap=Math.max(1,Number(process.env.STONK_MAX_DAILY_LOSS_USD||500));
     if(account.dayPnL!=null&&account.dayPnL<=-dailyLossCap){
-      return send(res,200,{ok:true,enabled:true,marketOpen:true,mode:tradingMode(),circuitBreaker:true,reason:"daily_loss",dayPnL:account.dayPnL,dailyLossCap});
+      return send(res,200,{ok:true,enabled:true,marketOpen:true,mode:"live",circuitBreaker:true,reason:"daily_loss",dayPnL:account.dayPnL,dailyLossCap});
     }
 
     const universe=(process.env.STONK_AUTOTRADE_UNIVERSE||"SPY,QQQ,AAPL,MSFT,NVDA").split(",").map(x=>x.trim().toUpperCase()).filter(Boolean);
@@ -74,7 +74,7 @@ export default async function handler(req,res){
     }
 
     send(res,200,{
-      ok:true,enabled:true,marketOpen:true,mode:tradingMode(),execute,
+      ok:true,enabled:true,marketOpen:true,mode:"live",execute,
       account:{equity:account.equity,optionsBuyingPower:account.optionsBuyingPower,dayPnL:account.dayPnL},
       screened:universe.slice(0,maxSymbols),existingExposure:[...existing],ranked:ranked.slice(0,10),skipped,placed
     });
