@@ -1,0 +1,6 @@
+export function send(res,status,body){res.statusCode=status;res.setHeader("content-type","application/json; charset=utf-8");res.setHeader("cache-control","no-store");res.end(JSON.stringify(body))}
+export function method(req,allowed){if(!allowed.includes(req.method)){const e=new Error("Method "+req.method+" not allowed");e.status=405;throw e}}
+export async function body(req){if(req.body&&typeof req.body==="object")return req.body;let raw="";for await(const c of req)raw+=c;if(!raw)return{};try{return JSON.parse(raw)}catch{const e=new Error("Invalid JSON body");e.status=400;throw e}}
+export function query(req){return new URL(req.url,"http://localhost").searchParams}
+export function fail(res,e){const status=Number(e?.status)||500;send(res,status,{ok:false,error:status>=500?"Upstream or server error":e.message,detail:process.env.NODE_ENV==="development"?String(e?.stack||e):undefined})}
+export function requireOperator(req){const expected=process.env.STONK_TRADING_SECRET;if(!expected){const e=new Error("Trading endpoint is not configured");e.status=503;throw e}if((req.headers.authorization||"")!=="Bearer "+expected){const e=new Error("Operator authorization required");e.status=401;throw e}}
