@@ -1,0 +1,11 @@
+{
+  "name":"stonk-terminal",
+  "version":"0.2.0",
+  "private":true,
+  "type":"module",
+  "scripts":{
+    "dev":"npx --yes vercel@59.19.1 dev",
+    "test":"node --test",
+    "lint":"find api src test -name '*.js' -print0 | xargs -0 -n1 node --check"
+  }
+}
