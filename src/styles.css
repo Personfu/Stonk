@@ -265,6 +265,7 @@ a { color: inherit; }
 .drawer-source a { display: inline-flex; align-items: center; gap: 8px; margin-top: 9px; color: var(--amber); text-decoration: none; font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
 .drawer-source a:hover { text-decoration: underline; }
 .drawer-source p { margin: 8px 0 0; color: var(--muted); font-size: 11px; line-height: 1.5; }
+.drawer-linkedin { margin-top: 10px; }
 .drawer-note { margin: 25px 0 0; padding-left: 11px; border-left: 2px solid var(--amber); color: var(--dim); font-size: 11px; line-height: 1.5; }
 .toast { position: fixed; z-index: 100; right: 23px; bottom: 23px; max-width: min(360px, calc(100vw - 46px)); padding: 13px 16px; border: 1px solid #6e6e6e; border-radius: 4px; background: #2d2d2d; color: #e8e8e8; box-shadow: 0 10px 30px rgba(0,0,0,.3); font-size: 12px; }
 

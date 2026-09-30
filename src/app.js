@@ -13,6 +13,54 @@ const SECTION_META = {
 };
 const RESEARCH_SECTIONS = ["indices", "competitors", "holders", "analysts", "board", "leadership"];
 const ALL_SECTIONS = Object.keys(SECTION_META);
+// Add a direct page only after matching it to the named public entity.
+const LINKEDIN_INDEX_PROVIDER = "https://www.linkedin.com/showcase/s%26p-dow-jones-indices/";
+const LINKEDIN_ORGANIZATIONS = Object.freeze({
+  "Ford Motor Company": "https://www.linkedin.com/company/ford-motor-company/",
+  "Tesla, Inc.": "https://www.linkedin.com/company/tesla-motors/",
+  "Toyota Motor Corporation": "https://www.linkedin.com/company/toyota/",
+  "Honda Motor Co., Ltd.": "https://www.linkedin.com/company/honda/",
+  "Stellantis NV": "https://www.linkedin.com/company/stellantis/",
+  "Hyundai Motor Company": "https://www.linkedin.com/company/hyundai-motor-company/",
+  "Kia Corporation": "https://www.linkedin.com/company/kiaworldwide/",
+  "Volkswagen AG": "https://www.linkedin.com/company/volkswagen/",
+  "BMW AG": "https://www.linkedin.com/company/bmw-group/",
+  "Mercedes-Benz Group AG": "https://www.linkedin.com/company/mercedes-benz-group-ag/",
+  "Nissan Motor Co., Ltd.": "https://www.linkedin.com/company/nissan-motor-corporation/",
+  "Renault SA": "https://www.linkedin.com/company/renaultgroup/",
+  "Subaru Corporation": "https://www.linkedin.com/company/subaru-corporation/",
+  "Suzuki Motor Corporation": "https://www.linkedin.com/company/suzuki-motor-corporation/",
+  "Insight Enterprises": "https://www.linkedin.com/company/insight/",
+  "Connection": "https://www.linkedin.com/company/connection-it/",
+  "SHI International": "https://www.linkedin.com/company/shi-international-corp-/",
+  "The Vanguard Group": "https://www.linkedin.com/company/vanguard/",
+  "BlackRock, Inc.": "https://www.linkedin.com/company/blackrock/",
+  "State Street Corporation": "https://www.linkedin.com/company/state-street/",
+});
+const LINKEDIN_PEOPLE = Object.freeze({
+  "GM:Mary T. Barra": "https://www.linkedin.com/in/mary-barra/",
+  "GM:Mark Reuss": "https://www.linkedin.com/in/mark-reuss/",
+  "GM:Paul A. Jacobson": "https://www.linkedin.com/in/paul-jacobson-gm/",
+  "GM:Shilpan Amin": "https://www.linkedin.com/in/shilpan-amin/",
+  "GM:Rory Harvey": "https://www.linkedin.com/in/rory-harvey/",
+  "GM:Josh Tavel": "https://www.linkedin.com/in/josh-tavel-394103237/",
+  "GM:Lin-Hua Wu": "https://www.linkedin.com/in/mlinhuawu/",
+  "GM:Joanne C. Crevoiserat": "https://www.linkedin.com/in/joanne-crevoiserat/",
+  "GM:Mark A. Tatum": "https://www.linkedin.com/in/mark-tatum-46699a4/",
+  "GM:Devin N. Wenig": "https://www.linkedin.com/in/devin-wenig-b3488082/",
+  "CDW:Lynda M. Clarizio": "https://www.linkedin.com/in/lyndaclarizio/",
+  "CDW:Anthony R. Foxx": "https://www.linkedin.com/in/anthony-foxx-a63a4247/",
+  "CDW:Kelly J. Grier": "https://www.linkedin.com/in/kellygrier01/",
+  "CDW:Marc E. Jones": "https://www.linkedin.com/in/marc-jones-14237a3b/",
+  "CDW:Elizabeth H. Connelly": "https://www.linkedin.com/in/liz-h-connelly/",
+  "CDW:Rick Kulevich": "https://www.linkedin.com/in/rickkulevich/",
+  "CDW:Kate Sanderson": "https://www.linkedin.com/in/kate-sanderson-3146193/",
+  "CDW:Hang Tan": "https://www.linkedin.com/in/hangtan/",
+  "GM:Dan Levy": "https://www.linkedin.com/in/dan-levy-cfa-47a44a4/",
+  "GM:Michael Ward": "https://www.linkedin.com/in/michael-ward-5933a712/",
+  "GM:Tom Narayan": "https://www.linkedin.com/in/tom-narayan-4567b812/",
+  "GM:Joseph Spak": "https://www.linkedin.com/in/joseph-spak-11ab375/",
+});
 const WATCHLIST_KEY = "stonk.watchlist.v1";
 const RULES_KEY = "stonk.ruleDrafts.v1";
 const SCREENER_MAX_AGE_MS = 60_000;
@@ -83,6 +131,53 @@ function validSource(url) {
   } catch { return null; }
 }
 
+function validLinkedInPage(url, section) {
+  if (!url) return null;
+  try {
+    const parsed = new URL(String(url));
+    if (parsed.protocol !== "https:" || !["linkedin.com", "www.linkedin.com"].includes(parsed.hostname)) return null;
+    const person = ["analysts", "board", "leadership"].includes(section);
+    const allowedPath = person ? /^\/in\/[^/]+\/?$/ : /^\/(?:company|showcase)\/[^/]+\/?$/;
+    return allowedPath.test(parsed.pathname) ? parsed.href : null;
+  } catch { return null; }
+}
+
+function linkedInDestination(section, row) {
+  if (!RESEARCH_SECTIONS.includes(section) || !row?.name) return null;
+  const person = ["analysts", "board", "leadership"].includes(section);
+  const vanguardParent = state.ticker === "CDW" && section === "holders"
+    && ["Vanguard Capital Management", "Vanguard Portfolio Management"].includes(row.name);
+  const reviewedUrl = section === "indices" && /^(?:S&P|Dow Jones)\b/.test(row.name)
+    ? LINKEDIN_INDEX_PROVIDER
+    : vanguardParent ? LINKEDIN_ORGANIZATIONS["The Vanguard Group"]
+      : person ? LINKEDIN_PEOPLE[`${state.ticker}:${row.name}`] : LINKEDIN_ORGANIZATIONS[row.name];
+  const direct = validLinkedInPage(reviewedUrl, section);
+  if (direct) return {
+    href: direct,
+    label: section === "indices" ? "Index provider on LinkedIn" : vanguardParent ? "Parent group on LinkedIn"
+      : person ? "LinkedIn profile" : "LinkedIn page",
+    search: false,
+  };
+  const companyName = state.data?.company?.name || state.ticker || "";
+  const employer = section === "analysts" ? String(row.detail || "").split(" • ")[0] : companyName;
+  const query = person ? `${row.name} ${employer}`.trim() : row.name;
+  const href = new URL(`https://www.linkedin.com/search/results/${person ? "people" : "companies"}/`);
+  href.searchParams.set("keywords", query);
+  return { href: href.href, label: "Search LinkedIn", search: true };
+}
+
+function makeLinkedInLink(section, row) {
+  const destination = linkedInDestination(section, row);
+  if (!destination) return null;
+  const link = el("a", "source-pill linkedin-pill", `${destination.label} ↗`);
+  link.href = destination.href;
+  link.target = "_blank";
+  link.rel = "noopener noreferrer";
+  link.setAttribute("aria-label", `${destination.label} for ${row.name}${destination.search ? "; search results, identity not verified" : ""}`);
+  if (destination.search) link.title = "Search results; identity has not been verified.";
+  return link;
+}
+
 function formatDate(value) {
   if (!value) return "Date unavailable";
   const raw = String(value);
@@ -137,7 +232,7 @@ function statusTone(status) {
   return !status || /unverified|pending|candidate|estimated|unknown|not disclosed|not stated|reported|historical/i.test(String(status)) ? "caution" : "normal";
 }
 
-function makeMeta(row) {
+function makeMeta(row, section) {
   const meta = el("div", "record-meta");
   const status = el("span", "status-pill", row.status || "Status not stated");
   status.dataset.tone = statusTone(row.status);
@@ -154,6 +249,8 @@ function makeMeta(row) {
   } else {
     meta.append(el("span", "source-pill", "Source unavailable"));
   }
+  const linkedIn = makeLinkedInLink(section, row);
+  if (linkedIn) meta.append(linkedIn);
   return meta;
 }
 
@@ -188,7 +285,7 @@ function renderRelationshipList(section) {
     button.addEventListener("click", () => openDrawer(section, row, button));
     item.append(button);
     if (row.detail) item.append(el("p", "relationship-detail", row.detail));
-    item.append(makeMeta(row));
+    item.append(makeMeta(row, section));
     container.append(item);
   });
 }
@@ -262,7 +359,7 @@ function renderResearchList() {
     button.append(title, el("span", "research-card-arrow", "↗"));
     button.addEventListener("click", () => openDrawer(section, row, button));
     card.append(button);
-    const recordMeta = makeMeta(row);
+    const recordMeta = makeMeta(row, section);
     recordMeta.className = "research-card-meta";
     card.append(recordMeta);
     container.append(card);
@@ -1233,6 +1330,15 @@ function openDrawer(section, row, trigger) {
     sourceBox.append(link);
   } else {
     sourceBox.append(el("p", "", "No source link is available for this record. Treat it as unverified until a source is added."));
+  }
+  const linkedInBox = $("#drawer-linkedin");
+  const linkedIn = makeLinkedInLink(section, row);
+  linkedInBox.hidden = !linkedIn;
+  linkedInBox.replaceChildren();
+  if (linkedIn) {
+    linkedIn.className = "";
+    linkedInBox.append(el("span", "", "LINKEDIN"), linkedIn);
+    if (linkedIn.title) linkedInBox.append(el("p", "", "This opens LinkedIn search results. Confirm the identity before relying on a match."));
   }
   $("#drawer-backdrop").hidden = false;
   document.body.style.overflow = "hidden";
