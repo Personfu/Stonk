@@ -66,10 +66,24 @@
         </div>
         <div class="home-grid">
           <section class="network-panel panel" aria-labelledby="network-title">
-            <div class="home-panel-head"><div><span class="section-overline">EDITORIAL UNIVERSE</span><h2 id="network-title">Candidate map</h2></div><div class="network-legend"><span><i></i> Candidate</span><span><i></i> Theme hub</span></div></div>
-            <div class="network-frame-wrap"><div class="network-frame"><svg id="stock-network" viewBox="0 0 1000 540" role="group" aria-label="Interactive network of U.S. stock candidates grouped by editorial themes"></svg><div id="network-unavailable" class="network-unavailable" hidden>Candidate map unavailable. Search a ticker above to open its workspace.</div></div><span class="network-scroll-hint" aria-hidden="true">SWIPE MAP ↔</span></div>
+            <div class="home-panel-head"><div><span class="section-overline">EDITORIAL UNIVERSE</span><h2 id="network-title">3D candidate map</h2></div><div class="network-legend"><span><i></i> Candidate</span><span><i></i> Theme hub</span></div></div>
+            <div class="network-frame-wrap">
+              <div class="network-frame">
+                <canvas id="stock-network" aria-label="3D stock candidate map. Drag sideways to rotate, tap a bubble to inspect it, or use the candidate directory below for keyboard access."></canvas>
+                <div class="network-controls" aria-label="Map controls">
+                  <button id="map-left" type="button" aria-label="Rotate map left">↶</button>
+                  <button id="map-right" type="button" aria-label="Rotate map right">↷</button>
+                  <button id="map-zoom-in" type="button" aria-label="Zoom map in">+</button>
+                  <button id="map-zoom-out" type="button" aria-label="Zoom map out">−</button>
+                  <button id="map-reset" type="button" aria-label="Reset map view">RESET</button>
+                </div>
+                <div id="network-popover" class="network-popover" hidden></div>
+                <div id="network-unavailable" class="network-unavailable" hidden>Candidate map unavailable. Search a ticker above to open its workspace.</div>
+              </div>
+              <span class="network-scroll-hint" aria-hidden="true">DRAG TO ROTATE · TAP TO EXPAND</span>
+            </div>
             <div class="network-toolbar"><span id="home-universe-count">— candidates</span><span>Lines group editorial themes; they do not show business relationships.</span><span id="home-universe-asof">Directory date —</span><a id="home-universe-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Directory source ↗</a></div>
-            <div class="candidate-strip"><div class="candidate-strip-head"><strong>Candidate directory</strong><span id="candidate-visible-count">— shown</span></div><div id="candidate-list" class="candidate-list" aria-live="polite"></div></div>
+            <div class="candidate-strip"><div class="candidate-strip-head"><strong>Candidate directory</strong><span id="candidate-visible-count" role="status" aria-live="polite">— shown</span></div><div id="candidate-list" class="candidate-list"></div></div>
           </section>
           <aside class="discovery-rail">
             <section class="ranking-panel panel" aria-labelledby="ranking-title">
