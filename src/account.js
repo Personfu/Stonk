@@ -374,7 +374,8 @@ async function signUp(event) {
   setBusy(button, true, "Creating account…");
   setNotice("#authNotice");
   try {
-    const payload = await request("/auth/v1/signup", {
+    const redirect = encodeURIComponent(`${window.location.origin}/account.html`);
+    const payload = await request(`/auth/v1/signup?redirect_to=${redirect}`, {
       method: "POST", body: { email: value, password: password.value },
     });
     password.value = ""; confirm.value = "";
