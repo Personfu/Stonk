@@ -103,6 +103,7 @@ function friendlyError(error) {
   if (error.code === "invalid_credentials" || /invalid login credentials/i.test(error.message)) return "Email or password is incorrect.";
   if (error.code === "email_not_confirmed" || /email not confirmed/i.test(error.message)) return "Please confirm your email before signing in.";
   if (error.code === "user_already_exists" || /already registered/i.test(error.message)) return "This email may already have an account. Try signing in.";
+  if (error.code === "email_address_not_authorized" || /email address not authorized/i.test(error.message)) return "Account email cannot be sent right now. Please try again later.";
   if (error.code === "signup_disabled") return "New account creation is unavailable right now.";
   return error.message || "Something went wrong. Please try again.";
 }
