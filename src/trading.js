@@ -44,7 +44,7 @@ function errorText(error, source = "alpaca") {
       : message;
   }
   if (message.includes("credentials") || message.includes("not configured") || message.includes("Upstream or server error")) {
-    return "Data unavailable. Configure the live Alpaca credentials and refresh.";
+    return "This desk needs a licensed market feed before live movers can appear.";
   }
   return message;
 }
@@ -160,7 +160,9 @@ async function loadHealth() {
 }
 
 async function loadMarket() {
-  for (const selector of ["#gainers", "#losers", "#actives"]) $(selector).innerHTML = '<div class="muted">Checking market feed…</div>';
+  $("#marketGrid").hidden = true;
+  $("#marketState").hidden = false;
+  $("#marketState").textContent = "Checking market feed…";
   try {
     const result = await api("/api/market");
     $("#gainers").innerHTML = rows(result.movers?.gainers, (item) =>
@@ -169,9 +171,10 @@ async function loadMarket() {
       `<div class="row"><b>${escapeHtml(item.symbol)}</b><span class="negative">${number(item.percent_change)}%</span></div>`);
     $("#actives").innerHTML = rows(result.actives?.most_actives, (item) =>
       `<div class="row"><b>${escapeHtml(item.symbol)}</b><span>${Number(item.volume || 0).toLocaleString()}</span></div>`);
+    $("#marketState").hidden = true;
+    $("#marketGrid").hidden = false;
   } catch (error) {
-    const message = `<div class="empty-state">${escapeHtml(errorText(error))}</div>`;
-    for (const selector of ["#gainers", "#losers", "#actives"]) $(selector).innerHTML = message;
+    $("#marketState").innerHTML = `<b>Live movers are offline</b><p>${escapeHtml(errorText(error))}</p><a href="/">Explore the stock map ↗</a>`;
   }
 }
 

@@ -75,6 +75,10 @@ article.wide { grid-column: span 2; }
 .metric span { display: block; color: var(--muted); font: 700 9px var(--mono); text-transform: uppercase; letter-spacing: .05em; }
 .metric b { display: block; margin-top: 9px; font: 600 16px var(--mono); overflow-wrap: anywhere; }
 .empty-state { grid-column: 1 / -1; padding: 15px; border: 1px solid var(--soft-line); color: var(--muted); font-size: 12px; }
+.market-state { padding: 18px; border: 1px solid var(--soft-line); background: #151515; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.market-state b { display: block; color: var(--text); font-size: 14px; }
+.market-state p { margin: 5px 0 10px; }
+.market-state a { color: var(--text); text-underline-offset: 3px; }
 .operator-gate { display: grid; grid-template-columns: minmax(0, 1fr) minmax(230px, 440px); align-items: center; gap: 20px; padding: 15px; border: 1px solid var(--line); background: #111; }
 .operator-gate h3 { margin: 5px 0; color: var(--text); font: 700 15px var(--sans); letter-spacing: 0; text-transform: none; }
 .operator-gate p { margin: 0; font-size: 11px; line-height: 1.5; }
