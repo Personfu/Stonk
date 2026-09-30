@@ -18,7 +18,7 @@
 
   <main id="main-content">
     <section class="desk-command panel" aria-labelledby="desk-title">
-      <div class="desk-heading"><span class="eyebrow">STONK / MARKET TERMINAL</span><h1 id="desk-title">Trading desk</h1><p>Scan the market, inspect defined-risk option structures, and review broker status. Market results and orders require configured live credentials.</p></div>
+      <div class="desk-heading"><span class="eyebrow">STONK / MARKET TERMINAL</span><h1 id="desk-title">Trading desk</h1><p>Scan the market, inspect defined-risk option structures, and review broker status. Live market results need a licensed feed; the broker controls belong to a private operator account.</p></div>
       <form id="symbolForm"><label for="symbol">OPEN A SYMBOL</label><div class="search"><input id="symbol" value="SPY" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Stock ticker" /><button type="submit">Open ↗</button></div></form>
     </section>
 
@@ -31,7 +31,7 @@
       <button type="button" data-tab="automation">Automation</button>
     </nav>
 
-    <section id="market" class="tab panel active"><div class="section-head"><div><span class="eyebrow">MARKET DATA</span><h2>Market pulse</h2></div><button type="button" id="refreshMarket">Refresh ↻</button></div><div class="grid three"><article><h3>Gainers</h3><div id="gainers" class="stack"></div></article><article><h3>Losers</h3><div id="losers" class="stack"></div></article><article><h3>Most active</h3><div id="actives" class="stack"></div></article></div></section>
+    <section id="market" class="tab panel active"><div class="section-head"><div><span class="eyebrow">MARKET DATA</span><h2>Market pulse</h2></div><button type="button" id="refreshMarket">Refresh ↻</button></div><div id="marketState" class="market-state" role="status">Checking market feed…</div><div id="marketGrid" class="grid three" hidden><article><h3>Gainers</h3><div id="gainers" class="stack"></div></article><article><h3>Losers</h3><div id="losers" class="stack"></div></article><article><h3>Most active</h3><div id="actives" class="stack"></div></article></div></section>
 
     <section id="options" class="tab panel"><div class="section-head"><div><span class="eyebrow">OPTIONS RESEARCH</span><h2>Options lab</h2><p class="muted">Scores prioritize research. They are not profit forecasts.</p></div><button type="button" id="scanOptions">Scan chain ↻</button></div><div id="optionSummary" class="metrics"></div><div class="table-wrap"><table><thead><tr><th>Score</th><th>Strategy</th><th>Expiry</th><th>Limit</th><th>Max loss</th><th>Max profit</th><th>R/R</th></tr></thead><tbody id="candidates"></tbody></table></div></section>
 
