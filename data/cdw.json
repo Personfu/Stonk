@@ -1,0 +1,386 @@
+{
+  "company": {
+    "name": "CDW Corporation",
+    "ticker": "CDW",
+    "exchange": "NASDAQ",
+    "sector": "Information Technology · IT solutions distribution and services",
+    "description": "CDW distributes and integrates multi-brand information technology products and services for business, government, education and healthcare customers in the United States, United Kingdom and Canada. Its 2025 Form 10-K reported more than 250,000 customers and approximately 14,800 coworkers.",
+    "asOf": "2026-09-29",
+    "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm"
+  },
+  "coverage": {
+    "label": "Curated public-source coverage",
+    "note": "This is a sourced sample of CDW's network, not a complete customer or supplier roster. CDW reports more than 1,000 vendor partners and more than 250,000 customers. Many customers are confidential. Named sell-side analysts are omitted because no current primary-source roster was verified. Ownership snapshots are dated filings, not real-time positions.",
+    "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+    "asOf": "2026-09-29"
+  },
+  "sections": {
+    "suppliers": [
+      {
+        "name": "Adobe",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "ADBE"
+      },
+      {
+        "name": "Apple",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "AAPL"
+      },
+      {
+        "name": "Amazon Web Services",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "AMZN"
+      },
+      {
+        "name": "Cisco",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "CSCO"
+      },
+      {
+        "name": "Dell Technologies",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "DELL"
+      },
+      {
+        "name": "Hewlett Packard Enterprise",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "HPE"
+      },
+      {
+        "name": "HP Inc.",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "HPQ"
+      },
+      {
+        "name": "IBM",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "IBM"
+      },
+      {
+        "name": "Intel",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "INTC"
+      },
+      {
+        "name": "Lenovo",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner"
+      },
+      {
+        "name": "Microsoft",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "MSFT"
+      },
+      {
+        "name": "Nvidia",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "NVDA"
+      },
+      {
+        "name": "Palo Alto Networks",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner",
+        "ticker": "PANW"
+      },
+      {
+        "name": "Samsung",
+        "detail": "Named by CDW among its vendor partners in its 2025 Form 10-K. A vendor/brand relationship does not disclose an individual purchasing contract or spend for this name.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Partners",
+        "asOf": "2026-02-20",
+        "status": "vendor partner"
+      },
+      {
+        "name": "Ingram Micro",
+        "detail": "Wholesale distributor. CDW says purchases from these two distributors together exceeded 25% of total purchases; the individual split is not disclosed.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Supply risk",
+        "asOf": "2026-02-20",
+        "status": "wholesale distributor",
+        "ticker": "INGM"
+      },
+      {
+        "name": "TD SYNNEX",
+        "detail": "Wholesale distributor. CDW says purchases from these two distributors together exceeded 25% of total purchases; the individual split is not disclosed.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000140205726000011/cdw-20251231.htm",
+        "sourceLabel": "CDW 2025 Form 10-K · Supply risk",
+        "asOf": "2026-02-20",
+        "status": "wholesale distributor",
+        "ticker": "SNX"
+      }
+    ],
+    "customers": [
+      {
+        "name": "Precision Cable Assemblies",
+        "detail": "Named CDW customer; CDW designed an Azure environment for the company's ERP migration.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/articles/hardware/building-foundation-cloud-success.html",
+        "sourceLabel": "CDW customer case study",
+        "asOf": "2025-08-29",
+        "status": "public case study"
+      },
+      {
+        "name": "Jim's Formal Wear",
+        "detail": "Named CDW customer; worked with CDW on a Google Cloud migration.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/articles/cloud/ibm-power-google-cloud-with-cdws-expertise.html",
+        "sourceLabel": "CDW customer case study",
+        "asOf": "2025-01-01",
+        "status": "public case study"
+      },
+      {
+        "name": "We Insure",
+        "detail": "Named CDW customer; CDW helped optimize its Amazon Connect contact center.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/articles/digitalworkspace/cdw-helps-insurance-company-transform-contact-center.html",
+        "sourceLabel": "CDW customer case study",
+        "asOf": "2026-07-15",
+        "status": "public case study"
+      },
+      {
+        "name": "Southwest Service Administrators",
+        "detail": "Named CDW customer in a Zoom unified communications case study.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/articles/digitalworkspace/one-small-business-improve-customer-service-modern-contact-center.html",
+        "sourceLabel": "CDW customer case study",
+        "asOf": "2026-02-09",
+        "status": "public case study"
+      }
+    ],
+    "indices": [
+      {
+        "name": "S&P 500 Index",
+        "detail": "CDW identifies itself as a member of the S&P 500 Index on its investor relations site.",
+        "sourceUrl": "https://investor.cdw.com/overview/",
+        "sourceLabel": "CDW investor relations",
+        "asOf": "2026-09-29",
+        "status": "company-reported membership"
+      }
+    ],
+    "competitors": [
+      {
+        "name": "Insight Enterprises",
+        "detail": "Fellow IT solutions provider. Connection's 2025 annual report identifies CDW and Insight as national competitors; Insight also names CDW as a competitor.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1050377/000110465926036111/cnxn-20251231xars.pdf",
+        "sourceLabel": "Connection 2025 annual report · Competition",
+        "asOf": "2026-03-27",
+        "status": "named peer",
+        "ticker": "NSIT"
+      },
+      {
+        "name": "Connection",
+        "detail": "Connection identifies CDW as a competing national IT solutions provider in its 2025 annual report.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1050377/000110465926036111/cnxn-20251231xars.pdf",
+        "sourceLabel": "Connection 2025 annual report · Competition",
+        "asOf": "2026-03-27",
+        "status": "named peer",
+        "ticker": "CNXN"
+      },
+      {
+        "name": "SHI International",
+        "detail": "Privately held IT solutions provider named alongside CDW as a national competitor by Connection.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1050377/000110465926036111/cnxn-20251231xars.pdf",
+        "sourceLabel": "Connection 2025 annual report · Competition",
+        "asOf": "2026-03-27",
+        "status": "named peer"
+      }
+    ],
+    "holders": [
+      {
+        "name": "Vanguard Capital Management",
+        "detail": "Schedule 13G reports 9,747,914 shares, 7.57% beneficial ownership as of March 31, 2026. Reported separately after Vanguard Group disaggregated its ownership; do not add to old parent-company figure.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000210011926000331/xslSCHEDULE_13G_X02/primary_doc.xml",
+        "sourceLabel": "SEC Schedule 13G · Vanguard Capital Management",
+        "asOf": "2026-03-31",
+        "status": "filed ownership snapshot"
+      },
+      {
+        "name": "Vanguard Portfolio Management",
+        "detail": "Schedule 13G reports 8,200,432 shares, 6.37% beneficial ownership as of March 31, 2026. Separately reported business unit after Vanguard Group disaggregation; do not assume figures across Vanguard filings are additive.",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1402057/000210012126000172/xslSCHEDULE_13G_X02/primary_doc.xml",
+        "sourceLabel": "SEC Schedule 13G · Vanguard Portfolio Management",
+        "asOf": "2026-03-31",
+        "status": "filed ownership snapshot"
+      }
+    ],
+    "analysts": [],
+    "board": [
+      {
+        "name": "Christine A. Leahy",
+        "detail": "Chair, President and Chief Executive Officer. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "Virginia C. Addicott",
+        "detail": "Director; former CEO, FedEx Custom Critical. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "James A. Bell",
+        "detail": "Lead Independent Director; former Boeing CFO. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "Lynda M. Clarizio",
+        "detail": "Director; co-founder, The 98. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "Anthony R. Foxx",
+        "detail": "Director; former U.S. Secretary of Transportation. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "Kelly J. Grier",
+        "detail": "Director; former U.S. Chair and Managing Partner, EY. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "Marc E. Jones",
+        "detail": "Director; Aeris Communications chairman and CEO emeritus. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "David W. Nelms",
+        "detail": "Director; former Discover Financial Services CEO. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      },
+      {
+        "name": "Joseph R. Swedish",
+        "detail": "Director; former Anthem CEO. Listed on CDW's current leadership page and in its 2026 proxy.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Board",
+        "asOf": "2026-09-29",
+        "status": "public board member"
+      }
+    ],
+    "leadership": [
+      {
+        "name": "Christine A. Leahy",
+        "detail": "Chair, President and Chief Executive Officer. Listed by CDW as a member of its Enterprise Operating Committee.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      },
+      {
+        "name": "Elizabeth H. Connelly",
+        "detail": "Chief Commercial Officer and Executive Vice President. Listed by CDW as a member of its Enterprise Operating Committee.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      },
+      {
+        "name": "Rick Kulevich",
+        "detail": "Chief Legal Officer and Executive Vice President, Risk and Compliance, and Corporate Secretary. Listed by CDW as a member of its Enterprise Operating Committee.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      },
+      {
+        "name": "Mukesh Kumar",
+        "detail": "Chief Services and Solutions Officer and Executive Vice President. Listed by CDW as a member of its Enterprise Operating Committee.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      },
+      {
+        "name": "Albert J. Miralles",
+        "detail": "Chief Financial Officer and Executive Vice President, Enterprise Business Operations. Listed by CDW as a member of its Enterprise Operating Committee. CDW announced in August 2026 that he intends to retire in 2027 after a successor is named.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      },
+      {
+        "name": "Kate Sanderson",
+        "detail": "Chief Human Resources Officer and Executive Vice President, Coworker Success. Listed by CDW as a member of its Enterprise Operating Committee.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      },
+      {
+        "name": "Hang Tan",
+        "detail": "Chief Strategy and Transformation Officer and Executive Vice President. Listed by CDW as a member of its Enterprise Operating Committee.",
+        "sourceUrl": "https://www.cdw.com/content/cdw/en/about/overview/our-leadership.html",
+        "sourceLabel": "CDW leadership · Enterprise Operating Committee",
+        "asOf": "2026-09-29",
+        "status": "public executive"
+      }
+    ]
+  }
+}

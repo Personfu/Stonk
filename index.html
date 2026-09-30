@@ -1,21 +1,239 @@
 <!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="dark">
-<title>Stonk — Market Intelligence & Trading Terminal</title><link rel="stylesheet" href="/src/styles.css">
-</head>
-<body>
-<header class="topbar"><div><strong>STONK</strong><span class="muted"> market intelligence terminal</span></div><div id="status" class="pill">connecting</div></header>
-<main>
-<section class="hero panel"><div><p class="eyebrow">PUBLIC MARKETS / OPTIONS / EXECUTION</p><h1>Research the market. Rank defined-risk option structures. Execute through a broker API.</h1><p class="muted">Live-market execution only. Orders require explicit server-side acknowledgement, broker credentials and operator authorization.</p></div><form id="symbolForm"><label for="symbol">Ticker</label><div class="search"><input id="symbol" value="SPY" maxlength="8" autocomplete="off"><button>Open terminal</button></div></form></section>
-<nav class="tabs"><button data-tab="market" class="active">Market Pulse</button><button data-tab="options">Options Lab</button><button data-tab="intelligence">News + Macro</button><button data-tab="research">SEC Research</button><button data-tab="account">Broker</button><button data-tab="automation">Automation</button></nav>
-<section id="market" class="tab panel active"><div class="section-head"><h2>Market Pulse</h2><button id="refreshMarket">Refresh</button></div><div class="grid three"><article><h3>Gainers</h3><div id="gainers" class="stack"></div></article><article><h3>Losers</h3><div id="losers" class="stack"></div></article><article><h3>Most Active</h3><div id="actives" class="stack"></div></article></div></section>
-<section id="options" class="tab panel"><div class="section-head"><div><h2>Options Lab</h2><p class="muted">Candidates are research-priority scores, not profit forecasts.</p></div><button id="scanOptions">Scan chain</button></div><div id="optionSummary" class="metrics"></div><div class="table-wrap"><table><thead><tr><th>Score</th><th>Strategy</th><th>Expiry</th><th>Limit</th><th>Max loss</th><th>Max profit</th><th>R/R</th></tr></thead><tbody id="candidates"></tbody></table></div></section>
-<section id="intelligence" class="tab panel"><div class="section-head"><div><h2>News, Corporate Actions + Macro</h2><p class="muted">Alpaca news/corporate actions plus optional FRED macro series.</p></div><button id="loadIntelligence">Refresh</button></div><div id="macroCards" class="metrics"></div><div class="grid three"><article class="wide"><h3>Latest News</h3><div id="news" class="stack"></div></article><article><h3>Corporate Actions</h3><div id="actions" class="stack"></div></article></div></section>
-<section id="research" class="tab panel"><div class="section-head"><h2>SEC Research</h2><button id="loadResearch">Load filings</button></div><div id="facts" class="metrics"></div><div id="filings" class="stack"></div></section>
-<section id="account" class="tab panel"><div class="section-head"><h2>Broker Account</h2><button id="loadAccount">Refresh</button></div><div id="accountCards" class="metrics"></div><p class="muted">This view is read-only. Order submission is exposed only through the operator-authenticated server endpoint.</p></section>
-<section id="automation" class="tab panel"><h2>Automation Controls</h2><div id="automationState" class="metrics"></div><p>Automatic execution remains disabled until deployment flags explicitly enable scanning and order placement. Live execution remains fail-closed unless the deployment acknowledgement is configured.</p><p class="muted">Use conservative live risk caps, review fills/slippage and strategy logs, and expand exposure only after the execution data supports it.</p></section>
-</main>
-<footer>Stonk does not guarantee returns. Options can lose 100% of premium; Stonk's automated order path accepts bounded-risk option structures only.</footer>
-<script type="module" src="/src/app.js"></script>
-</body></html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#050505" />
+    <meta name="description" content="Stonk trading terminal: source-linked company relationships, minute market signals, and guarded trading rule drafts." />
+    <title>Stonk Terminal</title>
+    <link rel="stylesheet" href="./src/styles.css" />
+    <script src="./src/data.js" defer></script>
+    <script src="./src/app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" id="skip-link" href="#home-content">Skip to content</a>
+
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="Stonk home">
+          <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+          <span>STONK<span class="brand-period">.</span></span>
+        </a>
+
+        <div class="topbar-separator" aria-hidden="true"></div>
+        <div class="topbar-context">
+          <span class="eyebrow">EQUITIES / TERMINAL</span>
+          <strong id="topbar-workspace">Select ticker</strong>
+        </div>
+
+        <div class="header-search-wrap">
+          <label class="search-field" for="global-search">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.7" cy="8.7" r="5.8"></circle><path d="m13 13 4.1 4.1"></path></svg>
+            <input id="global-search" type="search" autocomplete="off" placeholder="Search records or enter a ticker..." aria-controls="search-results" />
+            <kbd class="search-shortcut">/</kbd>
+            <button id="open-ticker" class="ticker-go" type="button" title="Open ticker workspace">GO</button>
+          </label>
+          <div id="search-results" class="search-results" hidden></div>
+        </div>
+
+        <div class="topbar-actions">
+          <a class="desk-link" href="./trading.html">Trading desk <span aria-hidden="true">↗</span></a>
+          <span class="topbar-date" id="topbar-date">Data as of —</span>
+          <button class="watch-button" id="watch-button" type="button" aria-pressed="false">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="m10 1.8 2.4 5 5.5.7-4 3.9 1 5.5-4.9-2.6-4.9 2.6 1-5.5-4-3.9 5.5-.7z"></path></svg>
+            <span id="watch-label">Watch</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="feed-banner" id="feed-banner" role="status">
+        <div><span class="feed-dot" aria-hidden="true"></span><strong id="feed-status-text">Checking market feed</strong><span class="feed-divider">/</span><span id="feed-status-detail">No recommendation until fresh market inputs arrive.</span></div>
+        <span class="feed-mode">60 SECOND SCAN</span>
+      </div>
+
+      <main id="home-content" class="home-content" hidden>
+        <div class="home-heading">
+          <div><span class="section-overline">STONK / MARKET TERMINAL</span><h1>U.S. equity map <span>50 candidates</span></h1><p>An editorial discovery universe across established, growing, and specialty companies. Nodes are research entry points, not recommendations.</p></div>
+          <div class="home-status"><span id="home-screener-status">CHECKING SCREENER</span><small id="home-asof">Market data —</small></div>
+        </div>
+        <div class="home-command panel">
+          <label for="home-search">FIND A STOCK</label>
+          <input id="home-search" type="search" autocomplete="off" placeholder="Search any U.S. company or ticker…" aria-controls="home-suggestions" />
+          <button id="home-open-ticker" type="button">Open terminal ↗</button>
+          <span id="home-search-count">50 candidates</span>
+          <div id="home-suggestions" class="home-suggestions" hidden></div>
+        </div>
+        <div class="home-grid">
+          <section class="network-panel panel" aria-labelledby="network-title">
+            <div class="home-panel-head"><div><span class="section-overline">CANDIDATE NETWORK</span><h2 id="network-title">Stock web</h2></div><div class="network-legend"><span><i></i> Candidate</span><span><i></i> Theme hub</span></div></div>
+            <div class="network-frame-wrap"><div class="network-frame"><svg id="stock-network" viewBox="0 0 1000 540" role="group" aria-label="Interactive network of U.S. stock candidates grouped by editorial themes"></svg><div id="network-unavailable" class="network-unavailable" hidden>Candidate map temporarily unavailable. Use the directory below to open a stock.</div></div><span class="network-scroll-hint" aria-hidden="true">SWIPE MAP ↔</span></div>
+            <div class="network-toolbar"><span id="home-universe-count">— candidates</span><span>Lines group editorial themes; they do not show business relationships.</span><a id="home-universe-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Universe source ↗</a></div>
+            <div class="candidate-strip"><div class="candidate-strip-head"><strong>Candidate directory</strong><span id="candidate-visible-count">— shown</span></div><div id="candidate-list" class="candidate-list" aria-live="polite"></div></div>
+          </section>
+          <aside class="discovery-rail">
+            <section class="ranking-panel panel" aria-labelledby="ranking-title">
+              <div class="home-panel-head"><div><span class="section-overline">LIVE SCREEN</span><h2 id="ranking-title">Signal ranking</h2></div><span id="ranked-count" class="count-badge">—</span></div>
+              <p class="ranking-caption">Ranks appear only for stocks with fresh market data and reasoned signals.</p>
+              <div id="ranked-list" class="ranked-list" aria-live="polite"><p class="rail-empty">Checking market data…</p></div>
+              <div class="ranking-foot"><span id="home-checked">Checked —</span><span id="home-next">Next —</span><a id="home-market-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Market source ↗</a></div>
+            </section>
+            <section class="candidate-detail-panel panel" aria-labelledby="candidate-detail-title">
+              <div class="home-panel-head"><div><span class="section-overline">SELECTED NODE</span><h2 id="candidate-detail-title">Inspect a candidate</h2></div></div>
+              <div id="candidate-detail" class="candidate-detail"><p class="rail-empty">Select a node or a directory row to inspect its company and open the full terminal.</p></div>
+            </section>
+            <section class="basket-panel panel" aria-labelledby="basket-title"><div class="home-panel-head"><div><span class="section-overline">SAVED LOCALLY</span><h2 id="basket-title">Watch basket</h2></div><span id="basket-count" class="count-badge">0</span></div><div id="basket-list" class="basket-list"></div><p>Saved tickers are a watchlist, not trade recommendations.</p></section>
+          </aside>
+        </div>
+      </main>
+
+      <main id="main-content" class="main-content" hidden>
+        <div class="page-heading">
+          <div>
+            <div class="breadcrumbs"><span>STONK</span><span class="breadcrumb-chevron">/</span><span>MARKET TERMINAL</span><span class="breadcrumb-chevron">/</span><strong id="breadcrumb-ticker">—</strong></div>
+            <h1><strong id="heading-ticker">—</strong><span id="heading-company-name">Select a stock</span></h1>
+            <p><span id="heading-exchange-sector">Company research and minute signal monitor</span></p>
+          </div>
+          <div class="heading-meta"><span class="meta-label">RESEARCH PROFILE</span><strong id="heading-as-of">As of —</strong><span>Source linked · Updated as available</span></div>
+        </div>
+
+        <div class="terminal-tape panel" role="group" aria-label="Market and account status">
+          <div class="tape-cell"><span>1M CLOSE</span><strong id="tape-price">—</strong><small id="tape-price-foot">Market feed unavailable</small></div>
+          <div class="tape-cell"><span>DAY CHANGE</span><strong id="tape-change">—</strong><small id="tape-change-foot">Awaiting data</small></div>
+          <div class="tape-cell"><span>1M VOLUME</span><strong id="tape-volume">—</strong><small id="tape-volume-foot">Awaiting data</small></div>
+          <div class="tape-cell signal-tape-cell"><span>DAY SIGNAL</span><strong id="tape-signal">—</strong><small id="tape-signal-foot">No current recommendation</small></div>
+          <div class="tape-cell account-cell"><span>POSITION</span><strong id="tape-position">—</strong><small>Open trading desk for account</small></div>
+          <div class="tape-cell account-cell"><span>UNREALIZED P&amp;L</span><strong id="tape-pnl">—</strong><small class="pnl-legend"><span class="positive">▲ gain</span><span class="negative">▼ loss</span><span>· not loaded here</span></small></div>
+        </div>
+
+        <div class="workspace-grid">
+          <aside class="relationship-panel suppliers-panel panel" aria-labelledby="suppliers-title">
+            <div class="panel-heading">
+              <div><span class="section-overline">UPSTREAM NETWORK</span><h2 id="suppliers-title">Suppliers</h2></div>
+              <span class="count-badge" id="suppliers-count">—</span>
+            </div>
+            <p class="panel-explainer">Organizations in this company's supply network.</p>
+            <div class="column-rule"></div>
+            <div class="relationship-list" id="suppliers-list" aria-live="polite"><div class="loading-state">Loading relationships…</div></div>
+            <div class="panel-footnote"><span class="direction-icon" aria-hidden="true">↗</span><span id="suppliers-footnote">INPUTS TO COMPANY</span></div>
+          </aside>
+
+          <section class="focus-panel panel" aria-labelledby="company-title">
+            <div class="company-identity">
+              <div class="identity-icon" id="identity-icon" aria-hidden="true">—</div>
+              <div class="identity-copy">
+                <div class="identity-kicker"><span id="company-exchange">—</span><span class="dot-separator">·</span><span id="company-sector">Sector unavailable</span></div>
+                <h2 id="company-title">Select a stock</h2>
+                <span class="ticker-pill" id="company-ticker">—</span>
+              </div>
+              <div class="identity-status" id="identity-status"><span class="status-light" aria-hidden="true"></span><span id="identity-status-text">RESEARCH PROFILE</span></div>
+            </div>
+
+            <section class="signal-monitor" aria-labelledby="signal-heading">
+              <div class="signal-monitor-head"><div><span class="section-overline">60 SECOND SCAN</span><h3 id="signal-heading">Two trading horizons</h3></div><div class="signal-monitor-tools"><span id="signal-state" class="signal-state">CONNECTING</span><button id="signal-refresh" type="button" class="signal-refresh" aria-label="Refresh both horizon screens">↻</button></div></div>
+              <div class="horizon-grid" aria-live="polite">
+                <article class="horizon-card" id="intraday-card" aria-labelledby="intraday-heading">
+                  <div class="horizon-card-head"><h4 id="intraday-heading">DAY TRADE <small>1M INPUTS</small></h4><span id="intraday-state" class="horizon-state">CHECKING</span></div>
+                  <div class="horizon-card-main"><strong id="intraday-action" class="horizon-action">NO SIGNAL</strong><span id="intraday-confidence">Waiting for data</span></div>
+                  <p id="intraday-short-reason" class="horizon-short-reason">A current minute scan is required.</p>
+                  <div class="horizon-bottom"><div><span id="intraday-net-label">OBSERVED MOVE AFTER COSTS</span><strong id="intraday-net">—</strong><small id="intraday-net-note">Historical scenario unavailable</small></div><div><span>DATA AS OF</span><strong id="intraday-asof">—</strong><small id="intraday-source">Source unavailable</small></div></div>
+                  <details class="horizon-details"><summary>Reasons &amp; inputs <span id="intraday-reason-count">0</span></summary><ul id="intraday-reasons"></ul><div id="intraday-inputs" class="horizon-inputs"></div></details>
+                </article>
+                <article class="horizon-card" id="one-week-card" aria-labelledby="one-week-heading">
+                  <div class="horizon-card-head"><h4 id="one-week-heading">ONE WEEK <small>TREND SCREEN</small></h4><span id="one-week-state" class="horizon-state">CHECKING</span></div>
+                  <div class="horizon-card-main"><strong id="one-week-action" class="horizon-action">NO SIGNAL</strong><span id="one-week-confidence">Waiting for data</span></div>
+                  <p id="one-week-short-reason" class="horizon-short-reason">A sourced weekly trend is required.</p>
+                  <div class="horizon-bottom"><div><span id="one-week-net-label">OBSERVED MOVE AFTER COSTS</span><strong id="one-week-net">—</strong><small id="one-week-net-note">Historical scenario unavailable</small></div><div><span>DATA AS OF</span><strong id="one-week-asof">—</strong><small id="one-week-source">Source unavailable</small></div></div>
+                  <details class="horizon-details"><summary>Reasons &amp; inputs <span id="one-week-reason-count">0</span></summary><ul id="one-week-reasons"></ul><div id="one-week-inputs" class="horizon-inputs"></div></details>
+                </article>
+              </div>
+              <details class="signal-history-details"><summary>Recent scans <span id="signal-history-count">0</span></summary><div id="signal-history" class="signal-history"><p>New scans appear here while this terminal is open.</p></div></details>
+              <div class="signal-provenance"><span>CHECKED <strong id="signal-refreshed">—</strong></span><span>NEXT <strong id="signal-next">—</strong></span><a id="signal-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Market source ↗</a><span id="signal-source-label">Source unavailable</span></div>
+            </section>
+
+            <div class="focus-tabs" role="tablist" aria-label="Company workspace views">
+              <button class="focus-tab active" id="tab-overview" type="button" role="tab" aria-selected="true" aria-controls="view-overview" data-focus-tab="overview">Overview</button>
+              <button class="focus-tab" id="tab-relationships" type="button" role="tab" aria-selected="false" aria-controls="view-relationships" data-focus-tab="relationships">Relationships</button>
+              <button class="focus-tab" id="tab-trading" type="button" role="tab" aria-selected="false" aria-controls="view-trading" data-focus-tab="trading">Trading rules <span class="tab-mini-dot" aria-hidden="true"></span></button>
+            </div>
+
+            <div id="view-overview" class="focus-view" role="tabpanel" aria-labelledby="tab-overview">
+              <div class="view-heading"><div><span class="section-overline">COMPANY SNAPSHOT</span><h3>At the center of the network</h3></div><span class="subtle-tag" id="profile-tag">PROFILE</span></div>
+              <p class="company-description" id="company-description">Loading company profile…</p>
+              <div class="coverage-grid" id="coverage-grid" aria-label="Relationship coverage"></div>
+              <div class="workforce-note"><strong>Workforce visibility</strong><span id="workforce-note">Employee totals may be disclosed in filings. Individual employee rosters are not available here; the leadership section lists public names only.</span></div>
+              <div class="insight-callout"><span class="callout-icon" aria-hidden="true">i</span><div><strong id="coverage-label">Follow the evidence</strong><p id="coverage-note">Every listed relationship should be opened and checked against its linked source and date before use in a decision.</p><a id="coverage-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Coverage source ↗</a></div></div>
+              <div id="research-actions" class="research-actions" hidden><strong>Research this security</strong><span>Start with the issuer filings and listing record while company relationships are being sourced.</span><div><a id="research-edgar" href="#" target="_blank" rel="noopener noreferrer">SEC filings ↗</a><a id="research-listing" href="#" target="_blank" rel="noopener noreferrer" hidden>Listing source ↗</a></div></div>
+            </div>
+
+            <div id="view-relationships" class="focus-view" role="tabpanel" aria-labelledby="tab-relationships" hidden>
+              <div class="view-heading"><div><span class="section-overline">NETWORK VIEW</span><h3 id="network-heading">How this company connects</h3></div><span class="subtle-tag">SOURCE LINKED</span></div>
+              <p class="view-intro">Explore disclosed and reported connections. Select a name to inspect the underlying record.</p>
+              <div class="network-map" id="network-map"></div>
+              <p class="network-note">A relationship map is a research aid. It does not imply a current contract, revenue amount, or direct trading signal.</p>
+            </div>
+
+            <div id="view-trading" class="focus-view trading-view" role="tabpanel" aria-labelledby="tab-trading" hidden>
+              <div class="view-heading"><div><span class="section-overline">AUTOMATION WORKSPACE</span><h3>Trading rules</h3></div><span class="subtle-tag warning-tag">DRAFT ONLY</span></div>
+              <div class="broker-state"><span class="broker-state-icon" aria-hidden="true">○</span><div><strong>Local rule drafts</strong><p>These drafts do not place orders. Live broker access is configured separately in the trading desk.</p></div><span class="broker-state-label">DRAFT ONLY</span></div>
+              <div class="broker-guidance"><div><span class="section-overline">BROKER CONNECTIONS</span><strong>Trading desk</strong><p>The separate desk can use a gated live Alpaca connection. Robinhood Agentic Trading in Codex requires its own connection.</p></div><a href="./trading.html">Open trading desk ↗</a></div>
+              <form id="rule-form" class="rule-form">
+                <div class="form-header"><h4>Create a rule draft</h4><span id="rule-symbol">—</span></div>
+                <div class="form-grid">
+                  <label>When <select name="signal" required><option value="price">Share price</option><option value="change">Daily % change</option><option value="volume">Daily volume</option></select></label>
+                  <label>Moves <select name="operator" required><option value="above">above</option><option value="below">below</option></select></label>
+                  <label>Threshold <input name="threshold" type="number" step="any" placeholder="Enter value" required /></label>
+                  <label>Action <select name="side" required><option value="buy">Buy</option><option value="sell">Sell</option></select></label>
+                  <label>Shares per order <input name="shares" type="number" min="1" max="1000000" step="1" value="1" required /></label>
+                  <label>Max orders per day <input name="dailyCap" type="number" min="1" max="1000" step="1" value="1" required /></label>
+                </div>
+                <div class="rule-actions"><p>Signals cannot run until market data and a broker are connected.</p><button class="primary-button" type="submit">Save draft rule <span aria-hidden="true">↗</span></button></div>
+              </form>
+              <div class="saved-rules"><div class="saved-rules-heading"><h4>Saved drafts</h4><span id="rules-count">0</span></div><div id="rules-list" aria-live="polite"></div></div>
+              <button class="live-button" type="button" disabled title="Local rule drafts are not executable">Rule execution unavailable here <span aria-hidden="true">↗</span></button>
+            </div>
+          </section>
+
+          <aside class="relationship-panel customers-panel panel" aria-labelledby="customers-title">
+            <div class="panel-heading">
+              <div><span class="section-overline">DOWNSTREAM NETWORK</span><h2 id="customers-title">Customers</h2></div>
+              <span class="count-badge" id="customers-count">—</span>
+            </div>
+            <p class="panel-explainer">Organizations that buy or use this company's output.</p>
+            <div class="column-rule"></div>
+            <div class="relationship-list" id="customers-list" aria-live="polite"><div class="loading-state">Loading relationships…</div></div>
+            <div class="panel-footnote"><span class="direction-icon" aria-hidden="true">↗</span><span id="customers-footnote">OUTPUTS FROM COMPANY</span></div>
+          </aside>
+        </div>
+
+        <section class="research-section panel" aria-labelledby="research-heading">
+          <div class="research-header"><div><span class="section-overline">GO DEEPER</span><h2 id="research-heading">The wider picture</h2><p>Index exposure, peers, ownership, coverage, and the people behind the company.</p></div><span class="research-header-icon" aria-hidden="true">↗</span></div>
+          <div class="research-tabs" id="research-tabs" role="tablist" aria-label="Research sections">
+            <button id="research-tab-indices" type="button" role="tab" class="research-tab active" aria-selected="true" aria-controls="research-list" data-research-tab="indices">Indices <span id="tab-count-indices">—</span></button>
+            <button id="research-tab-competitors" type="button" role="tab" class="research-tab" aria-selected="false" aria-controls="research-list" data-research-tab="competitors">Competitors <span id="tab-count-competitors">—</span></button>
+            <button id="research-tab-holders" type="button" role="tab" class="research-tab" aria-selected="false" aria-controls="research-list" data-research-tab="holders">Holders <span id="tab-count-holders">—</span></button>
+            <button id="research-tab-analysts" type="button" role="tab" class="research-tab" aria-selected="false" aria-controls="research-list" data-research-tab="analysts">Analysts <span id="tab-count-analysts">—</span></button>
+            <button id="research-tab-board" type="button" role="tab" class="research-tab" aria-selected="false" aria-controls="research-list" data-research-tab="board">Board <span id="tab-count-board">—</span></button>
+            <button id="research-tab-leadership" type="button" role="tab" class="research-tab" aria-selected="false" aria-controls="research-list" data-research-tab="leadership">Public leadership <span id="tab-count-leadership">—</span></button>
+          </div>
+          <div class="research-content"><div class="research-content-heading"><div><span class="section-overline" id="research-kicker">MARKET EXPOSURE</span><h3 id="research-title">Indices</h3></div><span id="research-visible-count" class="results-label">— records</span></div><div id="research-list" class="research-list" role="tabpanel" aria-live="polite"><div class="loading-state">Loading research…</div></div></div>
+        </section>
+
+        <footer class="page-footer"><span>STONK / COMPANY INTELLIGENCE</span><span>Research data is source linked and dated. Review it before making investment decisions.</span></footer>
+      </main>
+    </div>
+
+    <div id="drawer-backdrop" class="drawer-backdrop" hidden>
+      <aside class="entity-drawer" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1">
+        <div class="drawer-top"><span class="section-overline">RELATIONSHIP DETAIL</span><button id="drawer-close" class="icon-button" type="button" aria-label="Close details">×</button></div>
+        <div class="drawer-identity"><span class="drawer-avatar" id="drawer-avatar" aria-hidden="true">—</span><div><span id="drawer-section" class="drawer-section">RECORD</span><h2 id="drawer-title">—</h2><span id="drawer-ticker" class="drawer-ticker" hidden></span></div></div>
+        <div class="drawer-divider"></div>
+        <div class="drawer-field"><span>WHY IT APPEARS</span><p id="drawer-detail">—</p></div>
+        <div class="drawer-field"><span>EVIDENCE STATUS</span><p id="drawer-status">—</p></div>
+        <div class="drawer-field"><span>RECORD DATE</span><p id="drawer-date">—</p></div>
+        <div class="drawer-source" id="drawer-source"></div>
+        <p class="drawer-note">Relationships can change. Check the original source and date before relying on this record.</p>
+      </aside>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  </body>
+</html>

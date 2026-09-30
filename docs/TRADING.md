@@ -7,9 +7,9 @@ SEC EDGAR supplies filing/fundamental research. FRED optionally supplies macro o
 ## Execution posture
 
 1. Stonk is live-only; there is no paper endpoint or paper fallback.
-2. Browser code never receives broker keys or the operator secret.
-3. Public terminal views are read-only for account data and scans.
-4. `/api/order` requires an operator bearer token and accepts bounded-risk limit orders only.
+2. Browser code contains no broker keys or operator secret. The sign-in form handles the typed secret transiently and clears it after submission.
+3. The broker account and option-chain scans require an eight-hour private desk session. The sign-in form clears the secret after submission; the cookie is HttpOnly, signed, and SameSite=Strict. Cookie-based order POSTs also require a same-origin CSRF token. Server-side clients may use the operator bearer token.
+4. `/api/order` requires operator authentication and accepts canonical 1:1 long debit call or put vertical limit orders only.
 5. Every trading call requires `STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY`; otherwise execution fails closed.
 6. Automated live trading requires `STONK_AUTOTRADE_ENABLED=true`; actual placement additionally requires `STONK_AUTOTRADE_EXECUTE=true`.
 7. `STONK_MAX_RISK_PER_TRADE_USD` caps estimated option max loss.
@@ -17,6 +17,7 @@ SEC EDGAR supplies filing/fundamental research. FRED optionally supplies macro o
 9. Existing positions and open orders suppress another automated entry in the same underlying.
 10. Options buying power is checked before a candidate is placed.
 11. Default automated strategies are bull-call and bear-put debit spreads. Change `STONK_AUTOTRADE_ALLOWED_STRATEGIES` only after separately validating another bounded-risk strategy.
+12. Automated placement uses one stable broker client order ID per trading date. The broker rejects duplicate submissions from concurrent scans or retries, so at most one automated order can be submitted per date. Higher order volume requires a durable atomic order budget.
 
 ## Candidate ranking
 

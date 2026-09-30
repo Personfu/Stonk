@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101010" />
+  <meta name="description" content="Stonk trading desk: market pulse, defined-risk option research, public filings, and broker account status." />
+  <title>Trading Desk · STONK</title>
+  <link rel="stylesheet" href="/src/trading.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to desk</a>
+  <header class="topbar">
+    <div class="header-identity"><a class="brand" href="/" aria-label="Stonk research home">STONK<span>.</span></a><span class="header-divider" aria-hidden="true"></span><span class="header-title">TRADING DESK</span></div>
+    <nav class="top-nav" aria-label="Workspace"><a href="/">Stock map</a><a href="/trading.html" aria-current="page">Trading desk</a></nav>
+    <div id="status" class="status-badge" role="status">CHECKING CONNECTION</div>
+  </header>
+
+  <main id="main-content">
+    <section class="desk-command panel" aria-labelledby="desk-title">
+      <div class="desk-heading"><span class="eyebrow">STONK / MARKET TERMINAL</span><h1 id="desk-title">Trading desk</h1><p>Scan the market, inspect defined-risk option structures, and review broker status. Market results and orders require configured live credentials.</p></div>
+      <form id="symbolForm"><label for="symbol">OPEN A SYMBOL</label><div class="search"><input id="symbol" value="SPY" maxlength="15" autocomplete="off" spellcheck="false" aria-label="Stock ticker" /><button type="submit">Open ↗</button></div></form>
+    </section>
+
+    <nav class="tabs" aria-label="Trading desk views">
+      <button type="button" data-tab="market" class="active">Market pulse</button>
+      <button type="button" data-tab="options">Options lab</button>
+      <button type="button" data-tab="intelligence">News + macro</button>
+      <button type="button" data-tab="research">SEC research</button>
+      <button type="button" data-tab="account">Broker account</button>
+      <button type="button" data-tab="automation">Automation</button>
+    </nav>
+
+    <section id="market" class="tab panel active"><div class="section-head"><div><span class="eyebrow">MARKET DATA</span><h2>Market pulse</h2></div><button type="button" id="refreshMarket">Refresh ↻</button></div><div class="grid three"><article><h3>Gainers</h3><div id="gainers" class="stack"></div></article><article><h3>Losers</h3><div id="losers" class="stack"></div></article><article><h3>Most active</h3><div id="actives" class="stack"></div></article></div></section>
+
+    <section id="options" class="tab panel"><div class="section-head"><div><span class="eyebrow">OPTIONS RESEARCH</span><h2>Options lab</h2><p class="muted">Scores prioritize research. They are not profit forecasts.</p></div><button type="button" id="scanOptions">Scan chain ↻</button></div><div id="optionSummary" class="metrics"></div><div class="table-wrap"><table><thead><tr><th>Score</th><th>Strategy</th><th>Expiry</th><th>Limit</th><th>Max loss</th><th>Max profit</th><th>R/R</th></tr></thead><tbody id="candidates"></tbody></table></div></section>
+
+    <section id="intelligence" class="tab panel"><div class="section-head"><div><span class="eyebrow">EVENTS</span><h2>News + macro</h2><p class="muted">Alpaca news and corporate actions; FRED when configured.</p></div><button type="button" id="loadIntelligence">Refresh ↻</button></div><div id="macroCards" class="metrics"></div><div class="grid three"><article class="wide"><h3>Latest news</h3><div id="news" class="stack"></div></article><article><h3>Corporate actions</h3><div id="actions" class="stack"></div></article></div></section>
+
+    <section id="research" class="tab panel"><div class="section-head"><div><span class="eyebrow">FILINGS</span><h2>SEC research</h2></div><button type="button" id="loadResearch">Load filings ↻</button></div><div id="facts" class="metrics"></div><div id="filings" class="stack"></div></section>
+
+    <section id="account" class="tab panel"><div class="section-head"><div><span class="eyebrow">BROKERAGE</span><h2>Broker account</h2></div><button type="button" id="loadAccount">Refresh ↻</button></div>
+      <div class="operator-gate" aria-labelledby="operator-title">
+        <div><span class="eyebrow">PRIVATE DESK</span><h3 id="operator-title">Operator access</h3><p id="operatorMessage" class="muted" role="status">Checking your desk session…</p></div>
+        <form id="operatorLogin" class="operator-form" hidden><label for="operatorSecret">Operator password</label><div class="operator-input"><input id="operatorSecret" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" required aria-label="Operator password" /><button id="operatorLoginButton" type="submit">Unlock desk</button></div></form>
+        <div id="operatorConnected" class="operator-connected" hidden><span id="operatorExpiry" class="muted"></span><button id="operatorLogout" type="button">Lock desk</button></div>
+      </div>
+      <div id="accountCards" class="metrics"><div class="empty-state">Unlock the private desk to check the live account.</div></div><p class="muted">Your password is sent to the server for this sign-in and is cleared from the form. Live orders remain subject to separate server controls.</p></section>
+
+    <section id="automation" class="tab panel"><div class="section-head"><div><span class="eyebrow">EXECUTION GATES</span><h2>Automation controls</h2></div></div><div id="automationState" class="metrics"></div><p class="muted">Automated execution is disabled until deployment settings enable scanning, order placement, and the live account acknowledgement. Review the configured risk limits and fills before enabling it.</p></section>
+  </main>
+  <footer>Research and ranking do not guarantee a return. Options can lose their full premium. Verify the live account and order controls before trading.</footer>
+  <script type="module" src="/src/trading.js"></script>
+</body>
+</html>
