@@ -36,8 +36,13 @@ function rows(items, formatter, empty = "No data available") {
   return (items || []).map(formatter).join("") || `<div class="empty-state">${escapeHtml(empty)}</div>`;
 }
 
-function errorText(error) {
+function errorText(error, source = "alpaca") {
   const message = String(error?.message || "Unable to load data");
+  if (source === "sec") {
+    return error?.status >= 500 || !error?.status
+      ? "SEC research is unavailable. Check SEC access and the server configuration, then refresh."
+      : message;
+  }
   if (message.includes("credentials") || message.includes("not configured") || message.includes("Upstream or server error")) {
     return "Data unavailable. Configure the live Alpaca credentials and refresh.";
   }
@@ -238,7 +243,7 @@ async function loadResearch() {
     $("#filings").innerHTML = rows(result.filings, (filing) =>
       `<div class="row"><b>${escapeHtml(filing.form)}</b><span>${escapeHtml(filing.filed || "")} · ${escapeHtml(filing.reportDate || "")}</span></div>`);
   } catch (error) {
-    $("#filings").innerHTML = `<div class="empty-state">${escapeHtml(errorText(error))}</div>`;
+    $("#filings").innerHTML = `<div class="empty-state">${escapeHtml(errorText(error, "sec"))}</div>`;
   }
 }
 
