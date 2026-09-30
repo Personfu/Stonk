@@ -93,7 +93,7 @@ async function request(path, { method = "GET", body, token, headers = {} } = {})
   }
   const payload = await response.json().catch(() => null);
   if (!response.ok) {
-    throw new RequestError(payload?.msg || payload?.message || payload?.error_description || payload?.error || `Request failed (${response.status}).`, response.status, payload?.code || payload?.error_code || "");
+    throw new RequestError(payload?.msg || payload?.message || payload?.error_description || payload?.error || `Request failed (${response.status}).`, response.status, payload?.error_code || payload?.code || "");
   }
   return payload;
 }
@@ -155,7 +155,7 @@ async function authenticatedRequest(path, options = {}) {
   let token = await accessToken();
   try { return await request(path, { ...options, token }); }
   catch (error) {
-    if (error.status !== 401) throw error;
+    if (error.status !== 401 || error.code === "42501") throw error;
     token = await refreshSession();
     return request(path, { ...options, token });
   }
@@ -180,8 +180,8 @@ function showSessionError(error) {
 
 function watchlistUnavailable(error) {
   if (error.code === "PGRST205" || error.status === 404) return "Cloud watchlists are not ready for this project yet. Your account sign-in still works.";
-  if (error.status === 401) return "Your session ended. Please sign in again.";
   if (error.status === 403 || error.code === "42501") return "This watchlist is unavailable because access has not been granted to your account.";
+  if (error.status === 401) return "Your session ended. Please sign in again.";
   return `Could not load your watchlist. ${friendlyError(error)}`;
 }
 
@@ -241,7 +241,7 @@ async function loadWatchlist() {
     watchlistReady = false;
     renderWatchlist();
     setNotice("#watchNotice", watchlistUnavailable(error), "error");
-    if (error.status === 401) showSessionError(error);
+    if (error.status === 401 && error.code !== "42501") showSessionError(error);
   }
 }
 
@@ -289,7 +289,7 @@ async function addTicker(event) {
   } catch (error) {
     if (error.code === "23505") setNotice("#watchNotice", `${ticker} is already on your watchlist.`, "error");
     else setNotice("#watchNotice", `Could not save ${ticker}. ${friendlyError(error)}`, "error");
-    if (error.status === 401) showSessionError(error);
+    if (error.status === 401 && error.code !== "42501") showSessionError(error);
   } finally { setBusy(button, false); }
 }
 
@@ -302,7 +302,7 @@ async function removeTicker(ticker, button) {
     if (watchlistReady) setNotice("#watchNotice", `${ticker} removed from your watchlist.`, "success");
   } catch (error) {
     setNotice("#watchNotice", `Could not remove ${ticker}. ${friendlyError(error)}`, "error");
-    if (error.status === 401) showSessionError(error);
+    if (error.status === 401 && error.code !== "42501") showSessionError(error);
   } finally { setBusy(button, false); }
 }
 
@@ -478,7 +478,7 @@ async function updatePassword(event) {
 async function restore() {
   const fragment = new URLSearchParams(window.location.hash.slice(1));
   const redirectType = fragment.get("type");
-  const redirectError = fragment.get("error");
+  const redirectError = fragment.get("error") || fragment.get("error_code");
   if (redirectError) {
     history.replaceState(null, "", window.location.pathname + window.location.search);
     renderAccount();
