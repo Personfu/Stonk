@@ -85,7 +85,9 @@ const terminal = { payload: null, history: [], checkedAt: null, loading: false, 
 const screener = { payload: null, checkedAt: null, loading: false, requestId: 0, search: "", selectedTicker: null };
 const map3d = {
   yaw: .35, pitch: -.16, zoom: 1, signature: "", points: [], hubs: [], screen: [],
-  drag: null, selectedAt: 0, frame: 0, profileCache: new Map(), profileResults: new Map(),
+  drag: null, selectedAt: 0, frame: 0, hoveredTicker: null,
+  profileCache: new Map(), profileResults: new Map(), summaries: null, summaryPromise: null,
+  summaryFailedAt: 0,
 };
 let terminalExpiryTimer;
 let screenerExpiryTimer;
@@ -297,8 +299,10 @@ function renderCoverage() {
     ["suppliers", "Suppliers"], ["customers", "Customers"],
     ["indices", "Indices"], ["holders", "Holders"],
   ].forEach(([section, label]) => {
+    const count = rowArray(section).length;
+    if (!count) return;
     const card = el("div", "coverage-card");
-    card.append(el("strong", "", rowArray(section).length), el("span", "", label));
+    card.append(el("strong", "", count), el("span", "", label));
     container.append(card);
   });
 }
@@ -310,7 +314,7 @@ function renderNetwork() {
     const side = el("div", "network-side");
     side.append(el("span", "network-side-label", SECTION_META[section].title));
     const rows = rowArray(section).filter((row) => matches(row, section)).slice(0, 3);
-    if (!rows.length) side.append(el("span", "network-node", "No sourced records"));
+    if (!rows.length) side.append(el("span", "network-node", "Not mapped yet"));
     rows.forEach((row) => {
       const node = el("button", "network-node", row.name);
       node.type = "button";
@@ -537,6 +541,7 @@ function renderSignal() {
   const oneWeek = horizonScreen(payload, "oneWeek");
   const commonSource = payload?.source && typeof payload.source === "object" ? payload.source : {};
   const dayReady = readyScreen(intraday);
+  const hasCurrentScreen = dayReady || readyScreen(oneWeek);
   const dayMetrics = dayReady && intraday.metrics && typeof intraday.metrics === "object" ? intraday.metrics : {};
   const change = dayMetrics.changePct;
   text("#tape-price", dayReady ? marketPrice(dayMetrics.lastPrice) : "—");
@@ -548,6 +553,16 @@ function renderSignal() {
   text("#tape-volume-foot", dayReady ? "Latest minute bar" : "Awaiting data");
   text("#tape-signal-foot", dayReady ? `${intraday.confidence || "unrated"} data confidence` : "No current screen");
   $("#tape-signal").className = dayReady ? `action-${String(intraday.recommendation).toLowerCase()}` : "";
+  document.querySelectorAll(".market-tape-cell").forEach((cell) => { cell.hidden = !dayReady; });
+  $("#market-data-summary").hidden = dayReady;
+  text("#market-data-summary-title", terminal.loading && !payload ? "Checking live data"
+    : intraday.status === "closed" ? "Regular session closed"
+      : intraday.status === "stale" || (intraday.status === "ready" && !dayReady) ? "Waiting for fresh market data"
+        : "Live market screen paused");
+  text("#market-data-summary-detail", terminal.loading && !payload
+    ? "Prices and trade screens appear after a current market feed responds."
+    : screenReasons(intraday)[0] || "A current market feed is required for prices and trade screens.");
+  $("#signal-monitor").hidden = !hasCurrentScreen;
 
   renderHorizon("intraday", intraday, commonSource);
   renderHorizon("oneWeek", oneWeek, commonSource);
@@ -566,6 +581,7 @@ function renderSignal() {
   if (sourceUrl) sourceLink.href = sourceUrl;
   text("#signal-source-label", commonSource.name ? `${commonSource.name}${commonSource.feed ? ` · ${commonSource.feed}` : ""}` : "Source unavailable");
   const banner = $("#feed-banner");
+  banner.hidden = !hasCurrentScreen;
   banner.dataset.status = status;
   text("#feed-status-text", status === "ready" ? "Research screens available" : status === "closed" ? "Regular session closed" : status === "stale" ? "Market inputs stale" : terminal.loading ? "Checking market screen" : "Market screen unavailable");
   const feedCaveat = String(commonSource.feed || "").toLowerCase().includes("iex") ? "IEX single venue; prices may differ from the consolidated tape." : "Heuristic screens are information, not orders.";
@@ -637,6 +653,64 @@ function candidateArray() {
   return Array.isArray(rows) ? rows.filter((item) => item && safeTicker(item.ticker) && item.name) : [];
 }
 
+function displayCompanyName(name) {
+  return String(name || "")
+    .replace(/\s*(?:-\s*)?(?:Class [A-Z] )?(?:Common Stock|Common Shares|Ordinary Shares)(?:\s*\([^)]*\))?$/i, "")
+    .replace(/\s+\(The\)$/i, "")
+    .trim();
+}
+
+function candidateOverview(candidate) {
+  const profile = map3d.profileResults.get(candidate.ticker);
+  const company = profile?.company;
+  const curated = profile?.coverage?.label === "Curated public-source coverage" && company?.description;
+  if (curated) return {
+    label: "SOURCED COMPANY SNAPSHOT", summary: company.description,
+    sourceUrl: validSource(company.sourceUrl), sourceLabel: "Company filing", asOf: company.asOf,
+    profile, company, curated: true,
+  };
+  const editorial = map3d.summaries?.[candidate.ticker];
+  if (editorial) return {
+    label: "SOURCE-LINKED COMPANY OVERVIEW", summary: editorial.summary,
+    sourceUrl: validSource(editorial.sourceUrl), sourceLabel: editorial.sourceLabel || "Company source",
+    asOf: editorial.checkedAsOf, profile, company, curated: false,
+  };
+  return {
+    label: "LISTED SECURITY",
+    summary: map3d.summaries === null ? "Loading a sourced company overview…"
+      : "A sourced business overview is not available for this ticker yet.",
+    sourceUrl: validSource(company?.sourceUrl), sourceLabel: "Directory source",
+    asOf: company?.asOf, profile, company, curated: false,
+  };
+}
+
+async function loadMapSummaries() {
+  if (map3d.summaryPromise) return map3d.summaryPromise;
+  if (map3d.summaries && (!map3d.summaryFailedAt || Date.now() - map3d.summaryFailedAt < 30_000)) return;
+  map3d.summaryPromise = (async () => {
+    try {
+      const response = await fetch("/data/company-summaries.json", {
+        cache: "no-store", signal: AbortSignal.timeout(6000),
+      });
+      if (!response.ok) throw new Error("Company overviews unavailable");
+      const payload = await response.json();
+      if (!payload?.summaries || typeof payload.summaries !== "object") throw new Error("Invalid company overviews");
+      map3d.summaries = Object.fromEntries(Object.entries(payload.summaries).filter(([ticker, item]) =>
+        safeTicker(ticker) === ticker && typeof item?.summary === "string" && item.summary.trim()
+        && validSource(item.sourceUrl)));
+      if (!Object.keys(map3d.summaries).length) throw new Error("Company overviews empty");
+      map3d.summaryFailedAt = 0;
+    } catch {
+      map3d.summaries = {};
+      map3d.summaryFailedAt = Date.now();
+    } finally {
+      map3d.summaryPromise = null;
+      if (!$("#home-content").hidden) { renderCandidateDetail(); renderMapPopover(); }
+    }
+  })();
+  return map3d.summaryPromise;
+}
+
 async function loadCandidateFallback() {
   const response = await fetch("/data/universe.json", { cache: "no-store" });
   if (!response.ok) throw new Error("Candidate universe unavailable");
@@ -659,6 +733,7 @@ function matchingCandidates() {
 function selectCandidate(ticker, restoreFocus = false) {
   const next = safeTicker(ticker);
   if (!next) return;
+  const compact = window.matchMedia("(max-width: 680px)").matches;
   if (screener.selectedTicker !== next) map3d.selectedAt = performance.now();
   screener.selectedTicker = next;
   homeSuggestionsDismissed = true;
@@ -670,7 +745,13 @@ function selectCandidate(ticker, restoreFocus = false) {
   renderCandidateDetail();
   renderMapPopover();
   requestMapProfile(next);
-  if (restoreFocus) [...$("#candidate-list").querySelectorAll(".candidate-row")]
+  if (compact) requestAnimationFrame(() => {
+    const summary = $("#network-popover");
+    if (summary.hidden) return;
+    summary.scrollIntoView({ behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "nearest" });
+    summary.focus({ preventScroll: true });
+  });
+  else if (restoreFocus) [...$("#candidate-list").querySelectorAll(".candidate-row")]
     .find((node) => node.dataset.ticker === next)?.focus({ preventScroll: true });
 }
 
@@ -773,7 +854,8 @@ function drawStockMap() {
   for (const point of ordered) {
     const current = point.ticker === screener.selectedTicker;
     const faded = !matched.has(point.ticker);
-    const radius = Math.max(11, 23 * point.screen.scale + 4) * (current ? 1 + progress * .95 : 1);
+    const hovered = point.ticker === map3d.hoveredTicker;
+    const radius = Math.max(11, 23 * point.screen.scale + 4) * (current ? 1 + progress * 1.2 : hovered ? 1.16 : 1);
     const { x, y } = point.screen;
     ctx.globalAlpha = faded ? .2 : 1;
     if (current) {
@@ -788,6 +870,11 @@ function drawStockMap() {
     ctx.strokeStyle = current ? "#fff" : "#a2a2a2";
     ctx.lineWidth = current ? 2 : 1;
     ctx.beginPath(); ctx.arc(x, y, radius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+    if (current) {
+      ctx.strokeStyle = "rgba(255,255,255,.65)";
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.arc(x, y, radius + 5 + progress * 5, 0, 2 * Math.PI); ctx.stroke();
+    }
     ctx.shadowBlur = 0;
     ctx.fillStyle = current ? "#080808" : "#f6f6f6";
     ctx.font = `700 ${Math.max(9, Math.min(13, radius * .52))}px ui-monospace, "SFMono-Regular", Consolas, monospace`;
@@ -825,15 +912,17 @@ function positionMapPopover() {
 
 function renderMapPopover() {
   const popover = $("#network-popover");
+  const active = document.activeElement;
+  const focusClass = popover.contains(active) ? ["map-popover-close", "primary-button", "watch-button"]
+    .find((name) => active.classList.contains(name)) : null;
   popover.replaceChildren();
   const candidate = candidateArray().find((row) => row.ticker === screener.selectedTicker);
   if (!candidate) { popover.hidden = true; return; }
   popover.hidden = false;
-  const profile = map3d.profileResults.get(candidate.ticker);
-  const curated = profile?.coverage?.label === "Curated public-source coverage";
-  const company = profile?.company;
+  const overview = candidateOverview(candidate);
+  const { profile, company, curated } = overview;
   const top = el("div", "map-popover-top");
-  top.append(el("span", "map-popover-kicker", curated ? "SOURCED COMPANY SNAPSHOT" : "LISTED SECURITY"));
+  top.append(el("span", "map-popover-kicker", overview.label));
   const close = el("button", "map-popover-close", "×");
   close.type = "button"; close.setAttribute("aria-label", "Close company summary");
   close.addEventListener("click", () => {
@@ -842,27 +931,22 @@ function renderMapPopover() {
   });
   top.append(close);
   popover.append(top, el("strong", "map-popover-ticker", candidate.ticker),
-    el("h3", "map-popover-name", company?.name || candidate.name));
+    el("h3", "map-popover-name", displayCompanyName(company?.name || candidate.name)));
   const category = el("p", "map-popover-category",
     `${company?.exchange || candidate.exchange || "Exchange unavailable"} · ${curated && company?.sector ? company.sector : candidate.cluster || "Editorial candidate"}`);
   popover.append(category);
-  const description = curated && company?.description
-    ? company.description
-    : "Directory identity only. A sourced business summary is not available for this ticker yet.";
-  popover.append(el("p", "map-popover-description", description));
+  popover.append(el("span", "map-popover-section-label", "ABOUT THE COMPANY"),
+    el("p", "map-popover-description", overview.summary));
   const ranked = freshRankedRows().find((row) => row.ticker === candidate.ticker);
-  const quote = el("div", "map-popover-quote");
   if (ranked && finiteNumber(ranked.metrics?.lastPrice)) {
+    const quote = el("div", "map-popover-quote");
     quote.append(el("strong", "", marketPrice(ranked.metrics.lastPrice)));
     const change = el("span", finiteNumber(ranked.metrics?.changePct) && ranked.metrics.changePct >= 0 ? "positive" : "negative",
       signedPercent(ranked.metrics?.changePct));
     change.setAttribute("aria-label", `Fresh day change ${signedPercent(ranked.metrics?.changePct)}`);
     quote.append(change, el("small", "", "Fresh day change · research only"));
-  } else {
-    quote.append(el("span", "map-popover-noquote", "Live quote unavailable"),
-      el("small", "", "No price or trade signal is inferred from this map."));
+    popover.append(quote);
   }
-  popover.append(quote);
   if (curated) {
     const counts = el("div", "map-popover-counts");
     counts.append(el("span", "", `${profile.sections?.suppliers?.length || 0} sourced suppliers`),
@@ -882,12 +966,13 @@ function renderMapPopover() {
     renderBasket(); renderCandidateDetail(); renderMapPopover();
   });
   actions.append(open, watch); popover.append(actions);
-  if (validSource(company?.sourceUrl)) {
+  if (overview.sourceUrl) {
     const source = el("a", "map-popover-source",
-      `${curated ? "Profile" : "Directory"} source ↗ · ${formatDate(company.asOf)}`);
-    source.href = validSource(company.sourceUrl); source.target = "_blank"; source.rel = "noopener noreferrer";
+      `${overview.sourceLabel} ↗ · Checked ${formatDate(overview.asOf)}`);
+    source.href = overview.sourceUrl; source.target = "_blank"; source.rel = "noopener noreferrer";
     popover.append(source);
   }
+  if (focusClass) popover.querySelector(`.${focusClass}`)?.focus({ preventScroll: true });
   positionMapPopover();
 }
 
@@ -897,7 +982,9 @@ function requestMapProfile(ticker) {
   map3d.profileCache.set(ticker, pending);
   pending.then((profile) => {
     map3d.profileResults.set(ticker, profile);
-    if (screener.selectedTicker === ticker && !$("#home-content").hidden) renderMapPopover();
+    if (screener.selectedTicker === ticker && !$("#home-content").hidden) {
+      renderMapPopover(); renderCandidateDetail();
+    }
   });
 }
 
@@ -916,7 +1003,12 @@ function bindMapEvents() {
   });
   canvas.addEventListener("pointermove", (event) => {
     const drag = map3d.drag;
-    if (!drag) { canvas.style.cursor = hit(event) ? "pointer" : "grab"; return; }
+    if (!drag) {
+      const hovered = hit(event)?.ticker || null;
+      canvas.style.cursor = hovered ? "pointer" : "grab";
+      if (map3d.hoveredTicker !== hovered) { map3d.hoveredTicker = hovered; drawStockMap(); }
+      return;
+    }
     if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 6) drag.moved = true;
     if (!drag.moved) return;
     map3d.yaw += (event.clientX - drag.lastX) * .008;
@@ -936,6 +1028,9 @@ function bindMapEvents() {
     if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointercancel", () => { map3d.drag = null; canvas.style.cursor = "grab"; });
+  canvas.addEventListener("pointerleave", () => {
+    if (map3d.hoveredTicker) { map3d.hoveredTicker = null; drawStockMap(); }
+  });
   for (const [id, amount] of [["#map-left", -.38], ["#map-right", .38]]) {
     $(id).addEventListener("click", () => { map3d.yaw += amount; drawStockMap(); });
   }
@@ -963,8 +1058,9 @@ function renderCandidateList() {
     const button = el("button", `candidate-row${screener.selectedTicker === candidate.ticker ? " selected" : ""}`);
     button.type = "button";
     button.dataset.ticker = candidate.ticker;
+    button.setAttribute("aria-pressed", String(screener.selectedTicker === candidate.ticker));
     const identity = el("span", "candidate-row-identity");
-    identity.append(el("strong", "", candidate.ticker), el("span", "", candidate.name));
+    identity.append(el("strong", "", candidate.ticker), el("span", "", displayCompanyName(candidate.name)));
     button.append(identity, el("small", "", candidate.cluster || "Candidate"));
     button.addEventListener("click", () => selectCandidate(candidate.ticker, true));
     container.append(button);
@@ -977,17 +1073,38 @@ function renderCandidateDetail() {
   const container = $("#candidate-detail");
   container.replaceChildren();
   const candidate = candidateArray().find((item) => item.ticker === screener.selectedTicker);
-  if (!candidate) { container.append(el("p", "rail-empty", "Select a node or a directory row to inspect its company and open the full terminal.")); return; }
+  if (!candidate) {
+    text("#candidate-detail-title", "Inspect a company");
+    container.append(el("p", "rail-empty", "Select a node or a directory row to inspect its company and open the full terminal."));
+    return;
+  }
+  text("#candidate-detail-title", `${candidate.ticker} at a glance`);
+  const overview = candidateOverview(candidate);
   const heading = el("div", "candidate-detail-identity");
-  heading.append(el("strong", "", candidate.ticker), el("span", "", candidate.name));
+  heading.append(el("strong", "", candidate.ticker), el("span", "", displayCompanyName(overview.company?.name || candidate.name)));
   container.append(heading);
   const facts = el("div", "candidate-facts");
   facts.append(el("span", "", candidate.exchange || "Exchange unavailable"), el("span", "", candidate.cluster || "Cluster unavailable"),
     el("span", "", `${candidate.scale || "unclassified"} · editorial group`));
   container.append(facts);
+  container.append(el("p", "candidate-detail-summary", overview.summary));
+  if (overview.sourceUrl) {
+    const source = el("a", "candidate-detail-source", `${overview.sourceLabel} ↗ · Checked ${formatDate(overview.asOf)}`);
+    source.href = overview.sourceUrl;
+    source.target = "_blank";
+    source.rel = "noopener noreferrer";
+    container.append(source);
+  }
   const ranked = freshRankedRows().find((row) => row.ticker === candidate.ticker);
-  container.append(el("p", "candidate-detail-note", ranked ? `Fresh research screen: ${String(ranked.recommendation).toUpperCase()} · directional score ${ranked.score ?? "—"}. Open the terminal for inputs and reasons.`
-    : "No fresh market screen is available for this stock. The map card shows company facts when sourced."));
+  if (ranked && finiteNumber(ranked.metrics?.lastPrice)) {
+    const market = el("div", "candidate-detail-market");
+    market.append(el("strong", "", marketPrice(ranked.metrics.lastPrice)));
+    if (finiteNumber(ranked.metrics?.changePct)) market.append(el("span",
+      ranked.metrics.changePct >= 0 ? "positive" : "negative", signedPercent(ranked.metrics.changePct)));
+    market.append(el("small", "", "Fresh day change · research only"));
+    container.append(market);
+    container.append(el("p", "candidate-detail-note", `Fresh research screen: ${String(ranked.recommendation).toUpperCase()} · directional score ${ranked.score ?? "—"}. Open the terminal for inputs and reasons.`));
+  }
   const actions = el("div", "candidate-actions");
   const open = el("button", "primary-button", "Open terminal ↗");
   open.type = "button";
@@ -1088,11 +1205,11 @@ function renderHome() {
     : ["ready", "partial", "unconfigured", "closed"].includes(payload?.status) ? payload.status : "unavailable";
   const visibleStatus = ["ready", "partial"].includes(status) && expiredRows
     ? freshRows.length ? "partial" : "refreshing" : status;
-  const statusLabels = { ready: "FRESH DATA", partial: "PARTIAL DATA", unconfigured: "FEED NOT CONNECTED",
-    closed: "SESSION CLOSED", refreshing: "CHECKING DATA", unavailable: "DATA UNAVAILABLE" };
+  const statusLabels = { ready: "FRESH DATA", partial: "PARTIAL DATA", unconfigured: "RESEARCH MODE",
+    closed: "SESSION CLOSED", refreshing: "CHECKING DATA", unavailable: "RESEARCH MODE" };
   text("#home-screener-status", screener.loading && !payload ? "CHECKING DATA" : statusLabels[visibleStatus]);
   $("#home-screener-status").dataset.status = visibleStatus;
-  text("#home-asof", payload?.asOf ? `${visibleStatus === "refreshing" ? "Last market data" : "Market as of"} ${formatTime(payload.asOf)}` : "Market data unavailable");
+  text("#home-asof", payload?.asOf ? `${visibleStatus === "refreshing" ? "Last market data" : "Market as of"} ${formatTime(payload.asOf)}` : "Editorial directory ready");
   text("#home-universe-count", `${candidates.length} candidates · not recommendations`);
   text("#home-checked", `Checked ${formatTime(payload?.refreshedAt || screener.checkedAt)}`);
   text("#home-next", `Next ${formatTime(payload?.nextRefreshAt)}`);
@@ -1106,6 +1223,7 @@ function renderHome() {
   marketLink.hidden = !validSource(market.url);
   if (!marketLink.hidden) marketLink.href = validSource(market.url);
   const banner = $("#feed-banner");
+  banner.hidden = freshRows.length === 0;
   banner.dataset.status = visibleStatus === "ready" || visibleStatus === "partial" ? "ready" : "unavailable";
   text("#feed-status-text", visibleStatus === "ready" ? "Fresh research screens available" : visibleStatus === "partial" ? "Partial market coverage" : visibleStatus === "closed" ? "Regular session closed" : visibleStatus === "refreshing" ? "Checking market data" : visibleStatus === "unconfigured" ? "Market feed not connected" : "Market screen unavailable");
   text("#feed-status-detail", visibleStatus === "refreshing" ? "Earlier rankings are hidden until fresh market inputs arrive."
@@ -1157,49 +1275,83 @@ function showHome() {
   clearTimeout(terminalExpiryTimer);
   $("#main-content").hidden = true;
   $("#home-content").hidden = false;
+  $("#feed-banner").hidden = false;
   $("#watch-button").hidden = true;
   document.title = "Market Terminal · Stonk";
   text("#topbar-workspace", "Market terminal");
   text("#topbar-date", "DISCOVERY / U.S. EQUITIES");
   $("#home-suggestions").hidden = true;
   renderHome();
+  loadMapSummaries();
   if ((!screener.payload || !screenerCurrent() || screenerSignalsExpired()) && !screener.loading) fetchScreener();
 }
 
 function renderProfile() {
   const company = state.data?.company || {};
   const coverage = state.data?.coverage || {};
-  const name = company.name || state.ticker;
-  const asOf = company.asOf ? formatDate(company.asOf) : "Date unavailable";
+  const name = displayCompanyName(company.name || state.ticker);
+  const summary = map3d.summaries?.[state.ticker];
+  const curatedProfile = coverage.label === "Curated public-source coverage" && Boolean(company.description);
+  const summarySource = !curatedProfile && summary?.summary ? validSource(summary.sourceUrl) : null;
+  const overviewSource = summarySource || validSource(company.sourceUrl);
+  const overviewDate = summarySource ? summary.checkedAsOf : company.asOf;
+  const asOf = overviewDate ? formatDate(overviewDate) : null;
+  const hasNetworkRows = ["suppliers", "customers"].some((section) => rowArray(section).length > 0);
+  const hasResearchRows = RESEARCH_SECTIONS.some((section) => rowArray(section).length > 0);
+  const hasRelationships = hasNetworkRows || hasResearchRows;
   document.title = `${state.ticker} Terminal · Stonk`;
   $("#trading-desk-link").href = `./trading.html?ticker=${encodeURIComponent(state.ticker)}`;
+  $("#account-tape-link").href = `./trading.html?ticker=${encodeURIComponent(state.ticker)}`;
   text("#topbar-workspace", `${state.ticker} terminal`);
   text("#breadcrumb-ticker", state.ticker);
   text("#heading-ticker", state.ticker);
   text("#heading-company-name", name);
-  text("#heading-exchange-sector", [company.exchange, company.sector].filter(Boolean).join(" · ") || "Profile data unavailable");
+  text("#heading-exchange-sector", [company.exchange, company.sector].filter(Boolean).join(" · ") || "Company research");
   text("#company-title", name);
   text("#identity-icon", state.ticker.slice(0, 2));
   text("#company-ticker", state.ticker);
-  text("#company-exchange", company.exchange || "EXCHANGE UNAVAILABLE");
-  text("#company-sector", company.sector || "SECTOR UNAVAILABLE");
-  text("#company-description", company.description || (state.profileFound
-    ? "Issuer identity is available. Company relationships are awaiting source review."
-    : "Company research is temporarily unavailable. Check primary filings below."));
+  text("#company-exchange", company.exchange || "U.S. TICKER");
+  text("#company-sector", company.sector || "COMPANY RESEARCH");
+  text("#company-description", curatedProfile ? company.description : summarySource ? summary.summary
+    : state.loading ? `Loading ${state.ticker} company research…`
+      : state.profileFound ? "This ticker is listed in the U.S. security directory. A business overview is pending source review."
+        : "A sourced business overview has not been added for this ticker. Check the issuer's SEC filings below.");
+  const overviewLink = $("#company-overview-source");
+  overviewLink.hidden = !overviewSource;
+  if (overviewSource) {
+    overviewLink.href = overviewSource;
+    overviewLink.textContent = `${summarySource ? summary.sourceLabel || "Company source" : curatedProfile ? "Company filing" : "Listing directory"} ↗${asOf ? ` · checked ${asOf}` : ""}`;
+  }
   text("#workforce-note", company.workforceNote || "Employee totals may be disclosed in filings. Individual employee rosters are not available here; the leadership section lists public names only.");
-  text("#heading-as-of", company.asOf ? `As of ${asOf}` : "Date unavailable");
-  text("#topbar-date", company.asOf ? `DATA ${asOf.toUpperCase()}` : "DATA DATE UNAVAILABLE");
+  text("#heading-as-of", asOf ? `${summarySource ? "Overview checked" : "Research as of"} ${asOf}` : "Source review in progress");
+  text("#topbar-date", asOf ? `${summarySource ? "OVERVIEW" : "RESEARCH"} ${asOf.toUpperCase()}` : "COMPANY RESEARCH");
   text("#rule-symbol", state.ticker);
-  const identityOnly = state.profileFound && (coverage.label === "Identity only" || ALL_SECTIONS.every((section) => rowArray(section).length === 0));
+  const identityOnly = !hasRelationships;
+  const workspace = $(".workspace-grid");
+  workspace.classList.toggle("research-light", !hasNetworkRows);
+  workspace.classList.toggle("suppliers-only", rowArray("suppliers").length > 0 && !rowArray("customers").length);
+  workspace.classList.toggle("customers-only", rowArray("customers").length > 0 && !rowArray("suppliers").length);
+  $(".suppliers-panel").hidden = !rowArray("suppliers").length;
+  $(".customers-panel").hidden = !rowArray("customers").length;
+  $(".research-section").hidden = !hasResearchRows;
+  $("#tab-relationships").hidden = !hasNetworkRows;
+  $("#coverage-grid").hidden = !hasRelationships;
+  $(".workforce-note").hidden = !hasRelationships;
+  $(".insight-callout").hidden = !hasRelationships;
+  if (!hasNetworkRows && state.focus === "relationships") selectFocus("overview");
   const researchActions = $("#research-actions");
-  researchActions.hidden = !identityOnly && state.profileFound;
+  researchActions.hidden = hasRelationships || state.loading;
+  text("#research-actions-note", summarySource
+    ? "The company overview is source linked. Detailed suppliers, customers, ownership, analysts, and people have not been independently mapped for this ticker."
+    : "The listing identity is available, while detailed company relationships await source review. Start with issuer filings.");
   $("#research-edgar").href = `https://www.sec.gov/edgar/search/#/q=${encodeURIComponent(state.ticker)}`;
   const listingSource = validSource(company.sourceUrl || coverage.sourceUrl);
   $("#research-listing").hidden = !listingSource;
   if (listingSource) $("#research-listing").href = listingSource;
   $("#identity-status").classList.toggle("unavailable", !state.profileFound || identityOnly);
-  text("#identity-status-text", state.loading ? "LOADING PROFILE" : !state.profileFound ? "PROFILE UNAVAILABLE" : identityOnly ? "IDENTITY ONLY" : "RESEARCH PROFILE");
-  text("#profile-tag", `${state.ticker} / PROFILE`);
+  text("#identity-status-text", state.loading ? "CHECKING SOURCES" : curatedProfile ? "RESEARCH PROFILE" : summarySource ? "SOURCED OVERVIEW" : state.profileFound ? "LISTING VERIFIED" : "RESEARCH PENDING");
+  text("#overview-heading", hasNetworkRows ? "At the center of the network" : "Company overview");
+  text("#profile-tag", `${state.ticker} / ${hasRelationships ? "PROFILE" : "OVERVIEW"}`);
   text("#network-heading", `How ${name} connects`);
   text("#suppliers-footnote", `INPUTS TO ${state.ticker}`);
   text("#customers-footnote", `OUTPUTS FROM ${state.ticker}`);
@@ -1265,6 +1417,7 @@ async function loadTicker(rawTicker, options = {}) {
   $("#global-search").value = "";
   $("#search-results").hidden = true;
   renderProfile();
+  Promise.resolve(loadMapSummaries()).then(() => { if (state.ticker === ticker) renderProfile(); });
   renderSignal();
   fetchSignal(ticker);
   text("#company-description", `Loading ${ticker} research profile…`);

@@ -1,0 +1,306 @@
+{
+  "asOf": "2026-09-30",
+  "methodology": "Concise, source-linked business overviews for the editorial candidate map. These are company descriptions, not investment recommendations or live market data.",
+  "summaries": {
+    "AAPL": {
+      "summary": "Apple makes iPhone, iPad, Mac, Apple Watch, AirPods and Vision Pro. Its software platforms support services including the App Store, Apple Music, Apple Pay, iCloud and Apple TV.",
+      "sourceUrl": "https://www.apple.com/newsroom/2026/07/apple-reports-third-quarter-results/",
+      "sourceLabel": "Apple Newsroom · About Apple",
+      "checkedAsOf": "2026-09-30"
+    },
+    "MSFT": {
+      "summary": "Microsoft operates productivity and business software, cloud services and personal computing businesses. Its products include Microsoft 365, Azure, Windows, LinkedIn, Dynamics and Xbox.",
+      "sourceUrl": "https://www.microsoft.com/investor/reports/ar25/",
+      "sourceLabel": "Microsoft FY2025 annual report · Business segments",
+      "checkedAsOf": "2026-09-30"
+    },
+    "NVDA": {
+      "summary": "NVIDIA develops chips, systems and software for accelerated computing and AI. Its platforms also serve computer graphics and digital-twin applications.",
+      "sourceUrl": "https://www.nvidia.com/en-us/about-nvidia/",
+      "sourceLabel": "NVIDIA · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "AMD": {
+      "summary": "AMD designs processors, graphics products, AI accelerators and adaptive computing platforms for PCs, gaming, embedded systems and data centers.",
+      "sourceUrl": "https://www.amd.com/en/products.html",
+      "sourceLabel": "AMD · Products",
+      "checkedAsOf": "2026-09-30"
+    },
+    "AEHR": {
+      "summary": "Aehr Test Systems provides semiconductor test and burn-in equipment for wafers, individual dies and packaged devices, including power semiconductors and AI processors.",
+      "sourceUrl": "https://www.aehr.com/about-us/",
+      "sourceLabel": "Aehr Test Systems · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "GOOGL": {
+      "summary": "Alphabet comprises Google Services, Google Cloud and Other Bets. Google Services includes Search, YouTube, Android and Maps, while Google Cloud sells infrastructure, platform and enterprise applications.",
+      "sourceUrl": "https://abc.xyz/investor/faqs-and-general-information/",
+      "sourceLabel": "Alphabet Investor Relations · Segments and allocations",
+      "checkedAsOf": "2026-09-30"
+    },
+    "META": {
+      "summary": "Meta's Family of Apps includes Facebook, Instagram, Messenger and WhatsApp. Its Reality Labs segment develops virtual- and augmented-reality hardware, software and content.",
+      "sourceUrl": "https://investor.atmeta.com/investor-news/press-release-details/2026/Meta-Reports-Fourth-Quarter-and-Full-Year-2025-Results/",
+      "sourceLabel": "Meta Investor Relations · 2025 segment results",
+      "checkedAsOf": "2026-09-30"
+    },
+    "CRM": {
+      "summary": "Salesforce provides cloud-based customer relationship management software and a platform that connects customer data, business applications and AI agents.",
+      "sourceUrl": "https://www.salesforce.com/company/our-story/",
+      "sourceLabel": "Salesforce · Our story",
+      "checkedAsOf": "2026-09-30"
+    },
+    "PLTR": {
+      "summary": "Palantir builds software platforms that integrate customers' data and operations. Its principal platforms are Gotham, Foundry, Apollo and the Artificial Intelligence Platform (AIP).",
+      "sourceUrl": "https://investors.palantir.com/files/2025%20FY%20PLTR%2010-K.pdf",
+      "sourceLabel": "Palantir FY2025 Form 10-K · Our platforms",
+      "checkedAsOf": "2026-09-30"
+    },
+    "RDDT": {
+      "summary": "Reddit is an online network of communities organized around interests, hobbies and discussions where people share and discover content.",
+      "sourceUrl": "https://investor.redditinc.com/overview/default.aspx",
+      "sourceLabel": "Reddit Investor Relations · Overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "AMZN": {
+      "summary": "Amazon offers online shopping, cloud computing, streaming entertainment, consumer devices, advertising, healthcare and AI services, supported by a global operations network.",
+      "sourceUrl": "https://www.aboutamazon.com/about-us",
+      "sourceLabel": "Amazon · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "WMT": {
+      "summary": "Walmart operates retail stores, Sam's Club membership warehouses and ecommerce sites in the United States and internationally.",
+      "sourceUrl": "https://corporate.walmart.com/about",
+      "sourceLabel": "Walmart · About",
+      "checkedAsOf": "2026-09-30"
+    },
+    "COST": {
+      "summary": "Costco operates membership warehouses and ecommerce sites that sell a limited selection of branded and private-label merchandise across groceries and general goods.",
+      "sourceUrl": "https://investor.costco.com/overview/",
+      "sourceLabel": "Costco Investor Relations · Company overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "TGT": {
+      "summary": "Target is a general merchandise retailer offering exclusive and national brands through its stores, online shop and delivery services.",
+      "sourceUrl": "https://corporate.target.com/about",
+      "sourceLabel": "Target · About",
+      "checkedAsOf": "2026-09-30"
+    },
+    "ETSY": {
+      "summary": "Etsy operates an online marketplace for unique and creative goods, connecting independent sellers with buyers seeking handcrafted, designed and vintage items.",
+      "sourceUrl": "https://investors.etsy.com/company-information",
+      "sourceLabel": "Etsy Investor Relations · Company information",
+      "checkedAsOf": "2026-09-30"
+    },
+    "TSLA": {
+      "summary": "Tesla designs, builds, sells and services electric vehicles, solar-energy products and battery-storage systems.",
+      "sourceUrl": "https://www.tesla.com/about",
+      "sourceLabel": "Tesla · About",
+      "checkedAsOf": "2026-09-30"
+    },
+    "GM": {
+      "summary": "General Motors builds vehicles under the Chevrolet, Buick, GMC and Cadillac brands. It also offers automotive financing, software services, insurance and parts.",
+      "sourceUrl": "https://www.gm.com/our-brands",
+      "sourceLabel": "General Motors · Our brands",
+      "checkedAsOf": "2026-09-30"
+    },
+    "F": {
+      "summary": "Ford develops Ford trucks, SUVs, commercial vans and cars, along with Lincoln luxury vehicles and connected services.",
+      "sourceUrl": "https://corporate.ford.com/content/dam/corporate/us/en-us/documents/reports/notice-of-the-2024-virtual-annual-meeting-of-shareholders-and-proxy-statement.pdf",
+      "sourceLabel": "Ford · 2024 proxy statement · About Ford",
+      "checkedAsOf": "2026-09-30"
+    },
+    "RIVN": {
+      "summary": "Rivian designs and assembles electric consumer and commercial vehicles, including the R1T pickup and R1S SUV, supported by in-house hardware and software platforms.",
+      "sourceUrl": "https://rivian.com/our-company",
+      "sourceLabel": "Rivian · Our company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "SMP": {
+      "summary": "Standard Motor Products manufactures and distributes automotive aftermarket replacement parts and develops vehicle-control and thermal-management components for vehicle and equipment makers.",
+      "sourceUrl": "https://www.smpcorp.com/our-company",
+      "sourceLabel": "Standard Motor Products · Our company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "JPM": {
+      "summary": "JPMorgan Chase serves consumers and businesses through banking, investing and payments, and serves institutions through commercial and investment banking and asset and wealth management.",
+      "sourceUrl": "https://www.jpmorganchase.com/about",
+      "sourceLabel": "JPMorganChase · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "GS": {
+      "summary": "Goldman Sachs provides investment banking and markets services, including financing and trading, alongside asset and wealth management.",
+      "sourceUrl": "https://www.goldmansachs.com/what-we-do/our-businesses",
+      "sourceLabel": "Goldman Sachs · Our businesses",
+      "checkedAsOf": "2026-09-30"
+    },
+    "V": {
+      "summary": "Visa operates a global network and technology platform that connects financial institutions, businesses, governments and consumers for digital payments and money movement.",
+      "sourceUrl": "https://corporate.visa.com/en/businesses.html",
+      "sourceLabel": "Visa · Powering commerce globally",
+      "checkedAsOf": "2026-09-30"
+    },
+    "HOOD": {
+      "summary": "Robinhood provides retail brokerage, cryptocurrency, advisory and digital-banking services, along with access to private markets.",
+      "sourceUrl": "https://investors.robinhood.com/financials/annual-reports",
+      "sourceLabel": "Robinhood Investor Relations · Annual reports",
+      "checkedAsOf": "2026-09-30"
+    },
+    "ALLY": {
+      "summary": "Ally is a digital financial-services company offering banking, automotive and corporate financing, insurance, investment advisory and securities brokerage services.",
+      "sourceUrl": "https://www.ally.com/about/",
+      "sourceLabel": "Ally · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "JNJ": {
+      "summary": "Johnson & Johnson develops and sells medicines and medical technologies. Its two operating areas are Innovative Medicine and MedTech.",
+      "sourceUrl": "https://www.jnj.com/our-company",
+      "sourceLabel": "Johnson & Johnson · Our company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "UNH": {
+      "summary": "UnitedHealth Group operates UnitedHealthcare, which provides health benefits, and Optum, which delivers care, pharmacy services, technology and data-enabled health services.",
+      "sourceUrl": "https://www.unitedhealthgroup.com/uhg/businesses.html",
+      "sourceLabel": "UnitedHealth Group · Our businesses",
+      "checkedAsOf": "2026-09-30"
+    },
+    "LLY": {
+      "summary": "Eli Lilly is a medicine company researching, manufacturing and supplying treatments. Its stated focus areas include Alzheimer's disease, cancer, diabetes and obesity.",
+      "sourceUrl": "https://www.lilly.com/about/a-medicine-company",
+      "sourceLabel": "Eli Lilly · A medicine company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "ISRG": {
+      "summary": "Intuitive develops systems and services for minimally invasive care, including robotic-assisted surgical and bronchoscopy platforms.",
+      "sourceUrl": "https://www.intuitive.com/en-us/about-us/company",
+      "sourceLabel": "Intuitive · Company overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "HIMS": {
+      "summary": "Hims & Hers operates a health and wellness platform that connects customers with access to personalized care and related treatments.",
+      "sourceUrl": "https://investors.hims.com/",
+      "sourceLabel": "Hims & Hers · Investor relations",
+      "checkedAsOf": "2026-09-30"
+    },
+    "CAT": {
+      "summary": "Caterpillar manufactures construction and mining equipment, engines, gas turbines and locomotives. It also offers equipment financing through Cat Financial.",
+      "sourceUrl": "https://www.caterpillar.com/en/company.html",
+      "sourceLabel": "Caterpillar · About the company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "DE": {
+      "summary": "Deere makes equipment for agriculture, turf, construction and forestry, serving customers such as farmers, ranchers and construction crews.",
+      "sourceUrl": "https://www.deere.com/en-us/our-company/us-impact",
+      "sourceLabel": "John Deere · Company impact",
+      "checkedAsOf": "2026-09-30"
+    },
+    "GE": {
+      "summary": "GE Aerospace, the business behind ticker GE, makes aircraft propulsion systems and provides related services and systems for commercial and military aviation.",
+      "sourceUrl": "https://www.ge.com/about-us",
+      "sourceLabel": "GE · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "HII": {
+      "summary": "HII builds and maintains naval ships through Ingalls and Newport News Shipbuilding. Its Mission Technologies division supplies defense systems and services.",
+      "sourceUrl": "https://www.hii.com/company-overview",
+      "sourceLabel": "HII · Company overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "LECO": {
+      "summary": "Lincoln Electric makes industrial welding, cutting and brazing products, along with process automation systems used in manufacturing and equipment maintenance.",
+      "sourceUrl": "https://jobs.lincolnelectric.com/content/Our-Company/?locale=en_US",
+      "sourceLabel": "Lincoln Electric · Our company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "XOM": {
+      "summary": "ExxonMobil operates upstream oil and gas, fuel and chemical product businesses, and a Low Carbon Solutions business focused on technologies such as carbon capture.",
+      "sourceUrl": "https://corporate.exxonmobil.com/who-we-are/our-global-organization/business-divisions",
+      "sourceLabel": "ExxonMobil · Business divisions",
+      "checkedAsOf": "2026-09-30"
+    },
+    "CVX": {
+      "summary": "Chevron produces crude oil and natural gas and manufactures transportation fuels, lubricants, petrochemicals and additives.",
+      "sourceUrl": "https://www.chevron.com/investors/esg",
+      "sourceLabel": "Chevron · Business overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "COP": {
+      "summary": "ConocoPhillips explores for, produces, transports and markets crude oil, natural gas, natural gas liquids and liquefied natural gas.",
+      "sourceUrl": "https://www.conocophillips.com/what-we-do/exploration-and-production/",
+      "sourceLabel": "ConocoPhillips · Exploration and production",
+      "checkedAsOf": "2026-09-30"
+    },
+    "OXY": {
+      "summary": "Occidental produces oil and gas, manufactures chemicals through OxyChem, and operates midstream and marketing businesses. It also develops carbon management projects.",
+      "sourceUrl": "https://www.oxy.com/siteassets/documents/publications/oxy-climate-report-2025.pdf",
+      "sourceLabel": "Occidental · 2025 climate report",
+      "checkedAsOf": "2026-09-30"
+    },
+    "PBF": {
+      "summary": "PBF Energy refines crude oil into transportation fuels and other petroleum products. Its logistics business handles terminals, pipelines and storage assets.",
+      "sourceUrl": "https://www.pbfenergy.com/about-us/",
+      "sourceLabel": "PBF Energy · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "NEE": {
+      "summary": "NextEra Energy owns Florida Power & Light, a regulated electric utility, and NextEra Energy Resources, an energy infrastructure developer.",
+      "sourceUrl": "https://www.investor.nexteraenergy.com/company-overview",
+      "sourceLabel": "NextEra Energy · Company overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "DUK": {
+      "summary": "Duke Energy operates electric and natural gas utilities across several U.S. states and invests in power generation and grid infrastructure.",
+      "sourceUrl": "https://www.duke-energy.com/our-company/about-us?id=1921",
+      "sourceLabel": "Duke Energy · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "SO": {
+      "summary": "Southern Company operates electric utilities, natural gas distribution businesses and wholesale energy services through its family of companies.",
+      "sourceUrl": "https://www.southerncompany.com/about/our-business/our-companies.html",
+      "sourceLabel": "Southern Company · Our companies",
+      "checkedAsOf": "2026-09-30"
+    },
+    "VST": {
+      "summary": "Vistra combines competitive power generation with retail electricity services. Its generation portfolio includes natural gas, nuclear, coal, solar and battery storage.",
+      "sourceUrl": "https://vistracorp.com/about/",
+      "sourceLabel": "Vistra · Our company",
+      "checkedAsOf": "2026-09-30"
+    },
+    "AMT": {
+      "summary": "American Tower is a real estate investment trust that owns, operates and develops communications sites, including towers, and operates data center facilities.",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1053507/000105350726000088/amt-20260406.htm",
+      "sourceLabel": "American Tower · 2026 proxy statement",
+      "checkedAsOf": "2026-09-30"
+    },
+    "LIN": {
+      "summary": "Linde supplies industrial, specialty and healthcare gases and provides engineering solutions for sectors including manufacturing, electronics, healthcare and energy.",
+      "sourceUrl": "https://www.linde.com/about-us",
+      "sourceLabel": "Linde · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "FCX": {
+      "summary": "Freeport-McMoRan operates mining assets focused on copper, with gold and molybdenum reserves and operations in the Americas and Indonesia.",
+      "sourceUrl": "https://www.fcx.com/about",
+      "sourceLabel": "Freeport-McMoRan · Overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "NEM": {
+      "summary": "Newmont is a gold mining company that also produces copper, silver, zinc, lead and molybdenum through its global operations.",
+      "sourceUrl": "https://www.newmont.com/about-us/default.aspx",
+      "sourceLabel": "Newmont · About us",
+      "checkedAsOf": "2026-09-30"
+    },
+    "MP": {
+      "summary": "MP Materials mines and refines rare earth materials at Mountain Pass in California and manufactures permanent magnets in Texas.",
+      "sourceUrl": "https://www.mpmaterials.com/",
+      "sourceLabel": "MP Materials · Company overview",
+      "checkedAsOf": "2026-09-30"
+    },
+    "AA": {
+      "summary": "Alcoa produces alumina and aluminum products, with operations spanning bauxite mining, alumina refining and aluminum smelting.",
+      "sourceUrl": "https://www.alcoa.com/global/en/what-we-do/bauxite/",
+      "sourceLabel": "Alcoa · Bauxite to aluminum",
+      "checkedAsOf": "2026-09-30"
+    }
+  }
+}
