@@ -306,8 +306,8 @@ async function fetchSignal(ticker) {
   const key = process.env.ALPACA_API_KEY_ID || process.env.APCA_API_KEY_ID;
   const secret = process.env.ALPACA_API_SECRET_KEY || process.env.APCA_API_SECRET_KEY;
   const feed = (process.env.ALPACA_STOCK_DATA_FEED || process.env.ALPACA_MARKET_DATA_FEED || "iex").toLowerCase();
-  if (!key || !secret) return withHorizons(unavailable(ticker, "Connect an Alpaca market-data key to enable live signals.", now, feed));
-  if (!/^(iex|sip)$/.test(feed)) return withHorizons(unavailable(ticker, "Use a live IEX or licensed SIP market-data feed.", now, feed));
+  if (!key || !secret) return withHorizons(unavailable(ticker, "Minute screens resume when a licensed live feed is available.", now, feed));
+  if (!/^(iex|sip)$/.test(feed)) return withHorizons(unavailable(ticker, "Minute screens resume when a licensed live feed is available.", now, feed));
   const endpoint = `https://data.alpaca.markets/v2/stocks/${encodeURIComponent(ticker)}/snapshot?feed=${feed}`;
   const headers = {
     "APCA-API-KEY-ID": key,
