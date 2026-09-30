@@ -7,16 +7,20 @@ SEC EDGAR supplies filing/fundamental research. FRED optionally supplies macro o
 ## Execution posture
 
 1. Stonk is live-only; there is no paper endpoint or paper fallback.
-2. Browser code never receives broker keys or the operator secret.
-3. Public terminal views are read-only for account data and scans.
-4. `/api/order` requires an operator bearer token and accepts bounded-risk limit orders only.
-5. Every trading call requires `STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY`; otherwise execution fails closed.
+2. Browser code contains no broker keys or operator secret. The sign-in form handles the typed secret transiently and clears it after submission.
+3. The broker account and option-chain scans require an eight-hour private desk session. The sign-in form clears the secret after submission; the cookie is HttpOnly, signed, and SameSite=Strict. Cookie-based order POSTs also require a same-origin CSRF token. Server-side clients may use the operator bearer token.
+4. `/api/order` requires operator authentication and accepts canonical 1:1 long debit call or put vertical limit orders only.
+5. Every trading call requires `STONK_ALLOW_LIVE_TRADING=I_UNDERSTAND_REAL_MONEY`; otherwise execution fails closed. Hosted deployments also require `STONK_SINGLE_OWNER_ACCOUNT=I_UNDERSTAND_ONE_SHARED_ACCOUNT`. Keep this second acknowledgement unset on a public customer deployment: the current Alpaca key identifies one owner account, not the signed-in visitor.
 6. Automated live trading requires `STONK_AUTOTRADE_ENABLED=true`; actual placement additionally requires `STONK_AUTOTRADE_EXECUTE=true`.
 7. `STONK_MAX_RISK_PER_TRADE_USD` caps estimated option max loss.
 8. `STONK_MAX_DAILY_LOSS_USD` stops new automated entries after the account's current-day loss crosses the configured threshold.
 9. Existing positions and open orders suppress another automated entry in the same underlying.
 10. Options buying power is checked before a candidate is placed.
 11. Default automated strategies are bull-call and bear-put debit spreads. Change `STONK_AUTOTRADE_ALLOWED_STRATEGIES` only after separately validating another bounded-risk strategy.
+12. Automated placement uses one stable broker client order ID per trading date. The broker rejects duplicate submissions from concurrent scans or retries, so at most one automated order can be submitted per date. Higher order volume requires a durable atomic order budget.
+13. The manual order endpoint returns a `requestId` with each preview. Execution must return that ID. It becomes the Alpaca `client_order_id`, so a network retry cannot create a fresh order ID.
+
+Customer sign-in and personal watchlists are separate from the operator desk. A signed-in customer has no access to its broker routes. Before customer funding or orders can be enabled, the service needs an approved per-user brokerage integration, the provider's onboarding and identity checks, account ownership mapping, funding flow, and order lifecycle controls. [Alpaca Connect](https://docs.alpaca.markets/us/docs/about-connect-api) requires approval for third-party live trading; [Alpaca Broker account opening](https://docs.alpaca.markets/us/docs/account-opening) specifies customer onboarding. The existing server-wide API key must never be reused as a customer connection.
 
 ## Candidate ranking
 
@@ -71,6 +75,6 @@ Use SIP or other licensed feeds only if the account is entitled to them.
 
 Stonk does not expose Alpaca's paper-trading base URL. The trading adapter always targets `https://api.alpaca.markets`.
 
-Missing live acknowledgement, missing live credentials, insufficient options approval, insufficient buying power, an exceeded daily-loss limit, a duplicate underlying exposure, a closed market, or a strategy outside the allowlist prevents new automated orders.
+Missing live acknowledgement, missing hosted single-owner acknowledgement, missing live credentials, insufficient options approval, insufficient buying power, an exceeded daily-loss limit, a duplicate underlying exposure, a closed market, or a strategy outside the allowlist prevents new automated orders.
 
 Live execution should keep conservative risk caps until actual fill quality, slippage, signal turnover, earnings gaps, assignment behavior and strategy drift are measured from production telemetry.

@@ -1,0 +1,866 @@
+{
+  "company": {
+    "name": "General Motors Company",
+    "ticker": "GM",
+    "exchange": "NYSE",
+    "sector": "Consumer Discretionary · Automobiles",
+    "description": "GM manufactures and sells Chevrolet, GMC, Cadillac and Buick vehicles and provides financing and software services. GM's 2025 Form 10-K reported approximately 156,000 employees at December 31, 2025.",
+    "asOf": "2026-09-29",
+    "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1467858/000146785826000013/gm-20251231.htm"
+  },
+  "coverage": {
+    "label": "Curated public-source coverage",
+    "note": "This is a sourced subset, not a complete map. GM says its global supplier base may reach 20,000; private purchasing contracts and most end customers are not public. Historical announcements are labeled.",
+    "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2026/may/0520-automotive-supplier-recognize-best.html",
+    "asOf": "2026-09-29"
+  },
+  "sections": {
+    "suppliers": [
+      {
+        "name": "Adient",
+        "ticker": "ADNT",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "AISIN World Corp. of America",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "BASF Coatings",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Bridgestone Corporation",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "CITIC Dicastal",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Continental Tire",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Cooper Standard",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Eldor Corporation",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Gentex Corporation",
+        "ticker": "GNTX",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Gentherm Inc.",
+        "ticker": "THRM",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "HARMAN International",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "HL Mando",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Inteva Products",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "KIRCHHOFF Automotive",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "LG Electronics Vehicle Solutions",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Linamar",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Magna International",
+        "ticker": "MGA",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Maxxis Tires",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "MOBIS",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Multimatic",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Nucor",
+        "ticker": "NUE",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Schaeffler",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Valeo",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Worthington Steel",
+        "ticker": "WS",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Infineon",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      },
+      {
+        "name": "Murata",
+        "detail": "Named in GM's 2025 Supplier of the Year or Overdrive recognition. Product or service scope is not specified in this source.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2025/apr/0408-supplier-of-the-year.html",
+        "sourceLabel": "GM 2025 supplier awards",
+        "asOf": "2025-04-08",
+        "status": "documented relationship"
+      }
+    ],
+    "customers": [
+      {
+        "name": "McKinstry",
+        "detail": "GM reports 114 EVs deployed in its fleet, including 100 Silverado EVs.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2026/apr/0423-How-GM-helps-fleets-electric.html",
+        "sourceLabel": "GM Fleet customer story",
+        "asOf": "2026-04-23",
+        "status": "documented"
+      },
+      {
+        "name": "Delta Leasing",
+        "detail": "GM reports seven Silverado EVs deployed in a North Slope fleet test.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/topic/us/en/2026/apr/0423-How-GM-helps-fleets-electric.html",
+        "sourceLabel": "GM Fleet customer story",
+        "asOf": "2026-04-23",
+        "status": "documented"
+      },
+      {
+        "name": "AutoNation",
+        "detail": "Its Chevrolet dealerships list new GM vehicles for sale; dealer channel relationship.",
+        "sourceUrl": "https://www.autonation.com/dealers/chevrolet-laurel-md",
+        "sourceLabel": "AutoNation Chevrolet dealer",
+        "asOf": "2026-09-29",
+        "status": "documented",
+        "ticker": "AN"
+      },
+      {
+        "name": "FedEx",
+        "detail": "BrightDrop delivered its first EV600 vans to FedEx in 2021. This is a historical customer relationship; GM stopped BrightDrop production in 2025.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/news/us/en/2021/dec/1217-brightdrop.html",
+        "sourceLabel": "GM delivery announcement",
+        "asOf": "2021-12-17",
+        "status": "historical",
+        "ticker": "FDX"
+      },
+      {
+        "name": "Ryder",
+        "detail": "GM announced plans for Ryder to add BrightDrop EVs to its fleet. Fulfillment and current status are not verified.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/news/us/en/2023/apr/0403-brightdrop.html",
+        "sourceLabel": "GM BrightDrop announcement",
+        "asOf": "2023-04-03",
+        "status": "historical announcement",
+        "ticker": "R"
+      },
+      {
+        "name": "Walmart",
+        "detail": "Named by GM as a BrightDrop customer in a 2023 announcement. Current relationship is not verified.",
+        "sourceUrl": "https://news.gm.com/home.detail.html/Pages/news/us/en/2023/apr/0403-brightdrop.html",
+        "sourceLabel": "GM BrightDrop announcement",
+        "asOf": "2023-04-03",
+        "status": "historical announcement",
+        "ticker": "WMT"
+      }
+    ],
+    "indices": [
+      {
+        "name": "S&P 500 Consumer Discretionary",
+        "detail": "GM appears in S&P DJI's constituent list as of August 31, 2026.",
+        "sourceUrl": "https://www.spglobal.com/spdji/en/indices/equity/sp-500-consumer-discretionary-sector/",
+        "sourceLabel": "S&P Dow Jones Indices",
+        "asOf": "2026-08-31",
+        "status": "documented"
+      },
+      {
+        "name": "S&P 500 High Momentum Value",
+        "detail": "GM appears in S&P DJI's constituent list as of August 31, 2026.",
+        "sourceUrl": "https://www.spglobal.com/spdji/en/indices/dividends-factors/sp-500-high-momentum-value-index/",
+        "sourceLabel": "S&P Dow Jones Indices",
+        "asOf": "2026-08-31",
+        "status": "documented"
+      },
+      {
+        "name": "S&P 500 Pure Value",
+        "detail": "GM appears in S&P DJI's constituent list as of May 29, 2026.",
+        "sourceUrl": "https://www.spglobal.com/spdji/en/indices/equity/sp-500-pure-value",
+        "sourceLabel": "S&P Dow Jones Indices",
+        "asOf": "2026-05-29",
+        "status": "documented"
+      },
+      {
+        "name": "Dow Jones Automobiles & Parts Titans 30",
+        "detail": "GM identifies itself as a member in its 2026 proxy statement.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy",
+        "asOf": "2026-04-06",
+        "status": "documented"
+      }
+    ],
+    "competitors": [
+      {
+        "name": "Ford Motor Company",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented",
+        "ticker": "F"
+      },
+      {
+        "name": "Tesla, Inc.",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented",
+        "ticker": "TSLA"
+      },
+      {
+        "name": "Toyota Motor Corporation",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented",
+        "ticker": "TM"
+      },
+      {
+        "name": "Honda Motor Co., Ltd.",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented",
+        "ticker": "HMC"
+      },
+      {
+        "name": "Stellantis NV",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented",
+        "ticker": "STLA"
+      },
+      {
+        "name": "Hyundai Motor Company",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Kia Corporation",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Volkswagen AG",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "BMW AG",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Mercedes-Benz Group AG",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Nissan Motor Co., Ltd.",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Renault SA",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Subaru Corporation",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "Suzuki Motor Corporation",
+        "detail": "GM's 2026 proxy lists this automaker in its OEM comparison group.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy peer group",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      }
+    ],
+    "holders": [
+      {
+        "name": "The Vanguard Group",
+        "detail": "Identified as a holder of at least 5% of GM common stock in the 2026 proxy; holdings can change between filings.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy ownership",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "BlackRock, Inc.",
+        "detail": "Identified as a holder of at least 5% of GM common stock in the 2026 proxy; holdings can change between filings.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy ownership",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      },
+      {
+        "name": "State Street Corporation",
+        "detail": "Identified as a holder of at least 5% of GM common stock in the 2026 proxy; holdings can change between filings.",
+        "sourceUrl": "https://investor.gm.com/static-files/bdfcfac6-4efa-4aa4-ab73-e6a7a238d10f",
+        "sourceLabel": "GM 2026 proxy ownership",
+        "asOf": "2026-04-20",
+        "status": "documented"
+      }
+    ],
+    "analysts": [
+      {
+        "name": "Alex Perry",
+        "detail": "Bank of America • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Ishan Majumdar",
+        "detail": "Baptista Research • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Dan Levy",
+        "detail": "Barclays Capital • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Mickey Legg",
+        "detail": "Benchmark Company LLC • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "James Picariello",
+        "detail": "BNP Paribas Exane • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Graham (Jiachen) Shui",
+        "detail": "CICC Global Research • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Michael Ward",
+        "detail": "Citi Group • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Christopher Richter",
+        "detail": "CLSA Securities • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Harvind Viswanath",
+        "detail": "CRISPidea Private Limited • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Jairam Nathan",
+        "detail": "Daiwa Capital Markets • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Edison Yu",
+        "detail": "Deutsche Bank • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Matthias Volkert",
+        "detail": "DZ Bank • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Christopher McNally",
+        "detail": "Evercore ISI • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Mark Delaney",
+        "detail": "Goldman Sachs • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Michael Tyndall",
+        "detail": "HSBC • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Philippe Houchois",
+        "detail": "Jefferies International • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Rajat Gupta",
+        "detail": "J.P. Morgan • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Vijay Rakesh",
+        "detail": "Mizuho Securities USA LLC • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Andrew S. Percoco",
+        "detail": "Morgan Stanley • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "David Whiston",
+        "detail": "Morningstar • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Anindya Das",
+        "detail": "Nomura • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Alexander Potter",
+        "detail": "Piper Sandler • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Tom Narayan",
+        "detail": "RBC Capital Markets • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Esther Yim",
+        "detail": "Samsung Securities Co., Ltd. • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Itay Michaeli",
+        "detail": "TD Cowen • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Ivan Feinseth",
+        "detail": "Tigress Financial Partners LLC • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Joseph Spak",
+        "detail": "UBS • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Colin Langan",
+        "detail": "Wells Fargo Securities • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Emmanuel Rosner",
+        "detail": "Wolfe Research • GM-listed analyst coverage; opinions belong to the analyst, not GM.",
+        "sourceUrl": "https://investor.gm.com/shareholders/stock-information/",
+        "sourceLabel": "GM analyst coverage",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      }
+    ],
+    "board": [
+      {
+        "name": "Mary T. Barra",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Wesley G. Bush",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Joanne C. Crevoiserat",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Joseph Jimenez",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Alfred F. Kelly, Jr.",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Judith A. Miscik",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Patricia F. Russo",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Mark A. Tatum",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Jan E. Tighe",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Devin N. Wenig",
+        "detail": "Listed in GM's current board directory. See source for full biography.",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM board directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      }
+    ],
+    "leadership": [
+      {
+        "name": "Mary T. Barra",
+        "detail": "Chair and Chief Executive Officer",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Mark Reuss",
+        "detail": "President, General Motors",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Paul A. Jacobson",
+        "detail": "Executive Vice President and Chief Financial Officer",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Shilpan Amin",
+        "detail": "Global Chief Procurement and Supply Chain Officer",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Sterling Anderson",
+        "detail": "Executive Vice President, Global Product and Chief Product Officer",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Rory Harvey",
+        "detail": "Executive Vice President and President, Global Markets",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Arden Hoffman",
+        "detail": "Executive Vice President and Chief People Officer",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Susan Sheffield",
+        "detail": "President and Chief Executive Officer, GM Financial",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Josh Tavel",
+        "detail": "Senior Vice President, Manufacturing and Product Engineering, Research and Development",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      },
+      {
+        "name": "Lin-Hua Wu",
+        "detail": "Executive Vice President and Chief Marketing and Communications Officer",
+        "sourceUrl": "https://www.gm.com/company/leadership",
+        "sourceLabel": "GM leadership directory",
+        "asOf": "2026-09-29",
+        "status": "documented"
+      }
+    ]
+  }
+}

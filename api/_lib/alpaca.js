@@ -12,6 +12,10 @@ export function tradingMode(){return"live"}
 export function liveTradingAllowed(){return process.env.STONK_ALLOW_LIVE_TRADING==="I_UNDERSTAND_REAL_MONEY"}
 export function tradingBase(){
   if(!liveTradingAllowed()){const e=new Error("Live trading acknowledgement is not configured");e.status=403;throw e}
+  const hosted=process.env.VERCEL==="1"||process.env.NODE_ENV==="production";
+  if(hosted&&process.env.STONK_SINGLE_OWNER_ACCOUNT!=="I_UNDERSTAND_ONE_SHARED_ACCOUNT"){
+    const e=new Error("Single-owner broker access is disabled on this deployment");e.status=403;throw e
+  }
   return LIVE_TRADING
 }
 

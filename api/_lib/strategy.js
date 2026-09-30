@@ -10,7 +10,61 @@ if(low.type==="call"&&low.ask!=null&&high.bid!=null){const debit=low.ask-high.bi
 if(low.type==="put"&&high.ask!=null&&low.bid!=null){const debit=high.ask-low.bid;if(debit>0&&debit<width){const maxLoss=debit*100,maxProfit=(width-debit)*100,rr=maxProfit/maxLoss,deltaFit=100-Math.min(100,Math.abs(Math.abs(high.delta??-.5)-.55)*160),score=clamp(liq*.45+deltaFit*.25+clamp(rr*24,0,30),0,100);candidates.push({id:"bear-put-"+low.symbol+"-"+high.symbol,strategy:"bear_put_debit_spread",underlying:low.underlying,expiry:low.expiry,dte:days,legs:[{symbol:high.symbol,side:"buy",position_intent:"buy_to_open",ratio_qty:"1"},{symbol:low.symbol,side:"sell",position_intent:"sell_to_open",ratio_qty:"1"}],limitPrice:round(debit,2),maxLoss:round(maxLoss,2),maxProfit:round(maxProfit,2),rewardRisk:round(rr,2),score:round(score,1),thesis:"Defined-risk bearish vertical ranked by spread quality, delta fit and payoff asymmetry."})}}}}}
 return candidates.filter(c=>c.maxLoss==null||c.maxLoss>0).sort((a,b)=>b.score-a.score||(b.rewardRisk||0)-(a.rewardRisk||0))}
 export function candidateToOrder(c,qty=1){if(!c?.legs?.length)throw new Error("Candidate has no legs");const q=Math.max(1,Math.floor(Number(qty)||1));if(c.legs.length===1)return{symbol:c.legs[0].symbol,qty:String(q),side:c.legs[0].side,type:"limit",limit_price:String(c.limitPrice),time_in_force:"day",position_intent:c.legs[0].position_intent,client_order_id:"stonk-"+Date.now()};return{order_class:"mleg",qty:String(q),type:"limit",limit_price:String(c.limitPrice),time_in_force:"day",legs:c.legs,client_order_id:"stonk-"+Date.now()}}
-export function estimateOrderRisk(order){const qty=Math.max(1,Number(order.qty)||1),px=Math.abs(Number(order.limit_price)||0);if(!order.order_class||order.order_class==="simple"){if(order.side==="sell"&&order.position_intent==="sell_to_open")return{bounded:false,maxLoss:null};return{bounded:true,maxLoss:round(px*100*qty,2)}}const legs=order.legs||[];if(order.order_class!=="mleg"||legs.length<2||legs.length>4)return{bounded:false,maxLoss:null};const parsed=legs.map(l=>({...l,p:parseOcc(l.symbol)}));if(parsed.some(x=>!x.p))return{bounded:false,maxLoss:null};if(new Set(parsed.map(x=>x.p.expiry)).size!==1||new Set(parsed.map(x=>x.p.root)).size!==1)return{bounded:false,maxLoss:null};if(legs.length===2&&parsed[0].p.cp===parsed[1].p.cp){const width=Math.abs(parsed[0].p.strike-parsed[1].p.strike)*100*qty,debit=Number(order.limit_price)>=0;return{bounded:true,maxLoss:round(debit?px*100*qty:Math.max(0,width-px*100*qty),2)}}if(legs.length===4){const calls=parsed.filter(x=>x.p.cp==="C").sort((a,b)=>a.p.strike-b.p.strike),puts=parsed.filter(x=>x.p.cp==="P").sort((a,b)=>a.p.strike-b.p.strike);if(calls.length===2&&puts.length===2){const width=Math.max(Math.abs(calls[1].p.strike-calls[0].p.strike),Math.abs(puts[1].p.strike-puts[0].p.strike))*100*qty,debit=Number(order.limit_price)>=0;return{bounded:true,maxLoss:round(debit?px*100*qty:Math.max(0,width-px*100*qty),2)}}}return{bounded:false,maxLoss:null}}
+const unboundedRisk = () => ({ bounded: false, maxLoss: null });
+
+function orderQuantity(value) {
+  const quantity = Number(value);
+  return Number.isSafeInteger(quantity) && quantity >= 1 && quantity <= 10 ? quantity : null;
+}
+
+function optionLimit(value) {
+  const text = String(value ?? "");
+  if (!/^\d+(?:\.\d{1,2})?$/.test(text)) return null;
+  const price = Number(text);
+  return Number.isFinite(price) && price > 0 ? price : null;
+}
+
+export function validateLongDebitVertical(order) {
+  if (!order || order.order_class !== "mleg" || order.type !== "limit" ||
+      order.time_in_force !== "day" || !Array.isArray(order.legs) || order.legs.length !== 2) return null;
+  const qty = orderQuantity(order.qty);
+  const limitPrice = optionLimit(order.limit_price);
+  if (qty === null || limitPrice === null) return null;
+  const buy = order.legs.find((leg) => leg?.side === "buy" && leg.position_intent === "buy_to_open");
+  const sell = order.legs.find((leg) => leg?.side === "sell" && leg.position_intent === "sell_to_open");
+  if (!buy || !sell || buy === sell || String(buy.ratio_qty) !== "1" || String(sell.ratio_qty) !== "1") return null;
+  const long = parseOcc(buy.symbol);
+  const short = parseOcc(sell.symbol);
+  if (!long || !short || long.root !== short.root || long.expiry !== short.expiry || long.cp !== short.cp) return null;
+  const width = long.cp === "C" ? short.strike - long.strike : long.strike - short.strike;
+  if (!(width > 0 && limitPrice < width)) return null;
+  return {
+    qty,
+    limitPrice,
+    maxLoss: round(limitPrice * 100 * qty, 2),
+    order: {
+      order_class: "mleg", qty: String(qty), type: "limit",
+      limit_price: limitPrice.toFixed(2), time_in_force: "day",
+      legs: [buy, sell].map((leg) => ({
+        symbol: leg.symbol, side: leg.side,
+        position_intent: leg.position_intent, ratio_qty: "1",
+      })),
+    },
+  };
+}
+
+export function estimateOrderRisk(order) {
+  const vertical = validateLongDebitVertical(order);
+  if (vertical) return { bounded: true, maxLoss: vertical.maxLoss };
+  const qty = orderQuantity(order?.qty);
+  const limitPrice = optionLimit(order?.limit_price);
+  if (qty !== null && limitPrice !== null && (!order.order_class || order.order_class === "simple") &&
+      order.type === "limit" && parseOcc(order.symbol) && order.side === "buy" &&
+      order.position_intent === "buy_to_open") {
+    return { bounded: true, maxLoss: round(limitPrice * 100 * qty, 2) };
+  }
+  return unboundedRisk();
+}
 export function parseOcc(symbol){const m=String(symbol).match(/^([A-Z0-9.]{1,8})(\d{6})([CP])(\d{8})$/);if(!m)return null;return{root:m[1],expiry:"20"+m[2].slice(0,2)+"-"+m[2].slice(2,4)+"-"+m[2].slice(4,6),cp:m[3],strike:Number(m[4])/1000}}
 
 export function deriveTrendSignal(bars){const closes=(bars||[]).map(b=>Number(b.c)).filter(Number.isFinite);if(closes.length<6)return{direction:"neutral",confidence:0,score:50,return5:null,return20:null,realizedVol:null,samples:closes.length};const last=closes.at(-1),r5=last/closes.at(-6)-1,r20=closes.length>=21?last/closes.at(-21)-1:null,rets=[];for(let i=1;i<closes.length;i++)rets.push(Math.log(closes[i]/closes[i-1]));const mean=rets.reduce((a,b)=>a+b,0)/rets.length,variance=rets.reduce((a,b)=>a+(b-mean)**2,0)/Math.max(1,rets.length-1),vol=Math.sqrt(variance)*Math.sqrt(252);const raw=50+r5*500+(r20??0)*250,score=clamp(raw,0,100),direction=score>=58?"bull":score<=42?"bear":"neutral",confidence=round(Math.min(100,Math.abs(score-50)*2),1);return{direction,confidence,score:round(score,1),return5:round(r5,4),return20:r20==null?null:round(r20,4),realizedVol:round(vol,4),samples:closes.length}}
