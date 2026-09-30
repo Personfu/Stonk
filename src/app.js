@@ -66,6 +66,7 @@ const RULES_KEY = "stonk.ruleDrafts.v1";
 const SCREENER_MAX_AGE_MS = 60_000;
 const SIGNAL_INPUT_MAX_AGE_MS = 180_000;
 const FUTURE_TOLERANCE_MS = 30_000;
+const TRADINGVIEW_EXCHANGES = Object.freeze({ NASDAQ: "NASDAQ", NYSE: "NYSE" });
 
 const $ = (selector) => document.querySelector(selector);
 const state = {
@@ -535,6 +536,26 @@ function renderHorizon(key, screen, commonSource) {
   text(`#${prefix}-source`, source?.name ? `${source.name}${source.feed ? ` · ${source.feed}` : ""}` : "Source unavailable");
 }
 
+function hideDelayedQuote() {
+  $("#delayed-quote").hidden = true;
+}
+
+function renderDelayedQuote() {
+  const panel = $("#delayed-quote");
+  if (!state.ticker || $("#main-content").hidden || readyScreen(horizonScreen(terminal.payload, "intraday"))) {
+    hideDelayedQuote();
+    return;
+  }
+  panel.hidden = false;
+  const ticker = state.ticker;
+  const listedExchange = state.data?.company?.exchange || candidateArray().find((item) => item.ticker === ticker)?.exchange;
+  const exchange = TRADINGVIEW_EXCHANGES[listedExchange];
+  const source = $("#delayed-quote-source");
+  source.href = exchange ? `https://www.tradingview.com/symbols/${exchange}-${encodeURIComponent(ticker)}/`
+    : "https://www.tradingview.com/symbols/";
+  source.textContent = exchange ? `View ${ticker} on TradingView ↗` : "Browse TradingView quotes ↗";
+}
+
 function renderSignal() {
   const payload = terminal.payload;
   const intraday = horizonScreen(payload, "intraday");
@@ -588,6 +609,7 @@ function renderSignal() {
   text("#feed-status-detail", status === "ready" ? feedCaveat : clientStale ? "Market bar or quote aged out; waiting for fresh inputs." : screenReasons(intraday)[0] || screenReasons(oneWeek)[0] || "Research screens require fresh market inputs.");
   renderSignalHistory();
   scheduleTerminalExpiry(intraday, oneWeek);
+  renderDelayedQuote();
 }
 
 function scheduleTerminalExpiry(intraday, oneWeek) {
@@ -1269,6 +1291,7 @@ async function fetchScreener() {
 
 function showHome() {
   state.ticker = null;
+  hideDelayedQuote();
   $("#trading-desk-link").href = "./trading.html";
   $("#skip-link").href = "#home-content";
   terminal.requestId++;
@@ -1369,6 +1392,7 @@ function renderProfile() {
   renderResearchList();
   renderRules();
   renderSearchResults();
+  renderDelayedQuote();
 }
 
 function emptyProfile(ticker) {

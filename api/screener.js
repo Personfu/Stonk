@@ -123,10 +123,10 @@ async function fetchScreener() {
   const secret = process.env.ALPACA_API_SECRET_KEY || process.env.APCA_API_SECRET_KEY;
   const feed = (process.env.ALPACA_STOCK_DATA_FEED || process.env.ALPACA_MARKET_DATA_FEED || "iex").toLowerCase();
   if (!key || !secret) {
-    return baseResult("unconfigured", "Connect an Alpaca market-data key to enable live rankings.", now);
+    return baseResult("unconfigured", "Live rankings resume when a licensed market feed is available.", now);
   }
   if (!/^(iex|sip)$/.test(feed)) {
-    return baseResult("unavailable", "Use a live IEX or licensed SIP market-data feed.", now, feed);
+    return baseResult("unavailable", "Live rankings resume when a licensed market feed is available.", now, feed);
   }
   const session = marketSession(now);
   if (!session.open) return baseResult("closed", session.reason, now, feed);

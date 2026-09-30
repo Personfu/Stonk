@@ -805,6 +805,13 @@ a { color: inherit; }
 .account-tape-link:hover strong { text-decoration: underline; }
 .company-overview-source { display: inline-block; margin: 0 0 13px; color: #f0f0f0; font: 700 10px var(--mono); text-decoration: none; }
 .company-overview-source:hover { text-decoration: underline; }
+.delayed-quote { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 7px; padding: 10px 15px; }
+.delayed-quote-copy { min-width: 0; }
+.delayed-quote-copy h2 { margin: 3px 0 2px; color: #f4f4f4; font-size: 14px; }
+.delayed-quote-copy p { margin: 0; color: #aaa; font-size: 10px; line-height: 1.4; }
+.delayed-quote-display { display: flex; align-items: center; justify-content: flex-end; min-width: 0; }
+#delayed-quote-source { display: inline-block; padding: 9px 12px; border: 1px solid #777; color: #f4f4f4; font: 700 10px var(--mono); text-decoration: none; white-space: nowrap; }
+#delayed-quote-source:hover, #delayed-quote-source:focus-visible { border-color: #fff; background: #1a1a1a; }
 .workspace-grid.research-light { grid-template-columns: minmax(0,1fr); grid-template-areas: "focus"; }
 .workspace-grid.research-light .focus-panel { min-height: 0; }
 .workspace-grid.research-light .company-description { max-width: 76ch; font-size: 14px; line-height: 1.6; }
@@ -815,6 +822,8 @@ a { color: inherit; }
   .market-data-summary, .account-tape-link { grid-column: span 2; }
   .signal-tape-cell { border-right: 0; }
   .account-tape-link { border-top: 1px solid #333; }
+  .delayed-quote { align-items: flex-start; flex-direction: column; }
+  .delayed-quote-display { justify-content: flex-start; flex: auto; width: 100%; flex-wrap: wrap; }
   .workspace-grid.suppliers-only:not(.research-light) { grid-template-columns: 1fr; grid-template-areas: "focus" "suppliers"; }
   .workspace-grid.customers-only:not(.research-light) { grid-template-columns: 1fr; grid-template-areas: "focus" "customers"; }
 }
