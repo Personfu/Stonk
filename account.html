@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#101010" />
+  <meta name="referrer" content="no-referrer" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://rbkcgfxmhqvkzkpfpabf.supabase.co; img-src 'self' data:; font-src 'self'; form-action 'self'; base-uri 'none'; object-src 'none'" />
+  <meta name="description" content="Create a Stonk account to save a private research watchlist. Brokerage funding and trading are not available through customer accounts." />
+  <title>Your Account · STONK</title>
+  <link rel="stylesheet" href="/src/account.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to account</a>
+  <header class="topbar">
+    <a class="brand" href="/" aria-label="Stonk home"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>STONK<span class="brand-period">.</span></a>
+    <span class="header-divider" aria-hidden="true"></span>
+    <span class="header-title">CUSTOMER ACCOUNT</span>
+    <nav class="top-nav" aria-label="Main navigation">
+      <a href="/">Stock map</a>
+      <a href="/trading.html">Trading desk</a>
+      <a href="/account.html" aria-current="page">Account</a>
+    </nav>
+  </header>
+
+  <main id="main-content" class="account-main">
+    <div class="page-label"><span class="label-dot" aria-hidden="true"></span> STONK / PERSONAL WORKSPACE</div>
+    <div id="globalNotice" class="notice" role="status" aria-live="polite" hidden></div>
+
+    <section id="signedOut" class="entry-layout" aria-labelledby="entry-title">
+      <div class="entry-intro">
+        <span class="eyebrow">A PLACE FOR YOUR RESEARCH</span>
+        <h1 id="entry-title">Keep the names<br /><em>you’re watching.</em></h1>
+        <p>Set up a personal account to save a private stock watchlist and return to it later. Research stays separate from any broker account.</p>
+        <div class="benefit-list" aria-label="Account features">
+          <div class="benefit"><span class="benefit-number">01</span><div><strong>Save symbols</strong><small>Keep a private watchlist tied to your sign-in.</small></div></div>
+          <div class="benefit"><span class="benefit-number">02</span><div><strong>Explore the map</strong><small>Open each company’s research workspace in one step.</small></div></div>
+          <div class="benefit"><span class="benefit-number">03</span><div><strong>Stay in control</strong><small>Remove names whenever your research changes.</small></div></div>
+        </div>
+        <p class="entry-footnote">The stock map’s current Watch basket is saved on this device. This account watchlist is saved to your profile.</p>
+      </div>
+
+      <div class="entry-side">
+        <section class="auth-card" aria-labelledby="auth-title">
+          <div class="auth-card-head"><span class="eyebrow">ACCOUNT ACCESS</span><h2 id="auth-title">Welcome to Stonk</h2><p>Use your email to continue.</p></div>
+          <div id="authTabs" class="auth-tabs" aria-label="Account action">
+            <button id="showLogin" type="button" aria-pressed="true">Sign in</button>
+            <button id="showSignup" type="button" aria-pressed="false">Create account</button>
+          </div>
+          <div id="authNotice" class="form-notice" role="status" aria-live="polite" hidden></div>
+
+          <form id="loginForm" novalidate>
+            <label for="loginEmail">Email address</label>
+            <input id="loginEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required placeholder="you@example.com" />
+            <label for="loginPassword">Password</label>
+            <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Your password" />
+            <button id="showRecovery" class="text-button" type="button">Forgot password?</button>
+            <button id="loginSubmit" class="primary-button" type="submit">Sign in <span aria-hidden="true">↗</span></button>
+          </form>
+
+          <form id="signupForm" novalidate hidden>
+            <label for="signupEmail">Email address</label>
+            <input id="signupEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required placeholder="you@example.com" />
+            <label for="signupPassword">Password</label>
+            <input id="signupPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters" />
+            <label for="signupConfirm">Confirm password</label>
+            <input id="signupConfirm" type="password" autocomplete="new-password" required placeholder="Repeat your password" />
+            <p class="field-hint">Use at least 8 characters. You may need to confirm your email before signing in.</p>
+            <button id="signupSubmit" class="primary-button" type="submit">Create account <span aria-hidden="true">↗</span></button>
+          </form>
+
+          <form id="recoveryForm" novalidate hidden>
+            <p class="form-intro">Enter your account email and we’ll send a password reset link.</p>
+            <label for="recoveryEmail">Email address</label>
+            <input id="recoveryEmail" type="email" inputmode="email" autocomplete="email" autocapitalize="off" spellcheck="false" required placeholder="you@example.com" />
+            <button id="recoverySubmit" class="primary-button" type="submit">Send reset link <span aria-hidden="true">↗</span></button>
+            <button id="backToLogin" class="text-button" type="button">← Back to sign in</button>
+          </form>
+
+          <form id="resetForm" novalidate hidden>
+            <p class="form-intro">Choose a new password for your Stonk account.</p>
+            <label for="resetPassword">New password</label>
+            <input id="resetPassword" type="password" autocomplete="new-password" minlength="8" required placeholder="At least 8 characters" />
+            <label for="resetConfirm">Confirm new password</label>
+            <input id="resetConfirm" type="password" autocomplete="new-password" required placeholder="Repeat your new password" />
+            <button id="resetSubmit" class="primary-button" type="submit">Update password <span aria-hidden="true">↗</span></button>
+          </form>
+          <p class="auth-card-foot">Your session stays in this browser tab. Closing the tab signs you out here.</p>
+        </section>
+
+        <div class="access-note"><span class="access-icon" aria-hidden="true">↗</span><div><strong>Broker access is separate</strong><p>Customer accounts cannot fund an account or place trades. Those features remain unavailable pending a secure, per-user broker integration.</p></div></div>
+      </div>
+    </section>
+
+    <section id="signedIn" class="dashboard" aria-labelledby="dashboard-title" hidden>
+      <div class="dashboard-heading"><div><span class="eyebrow">YOUR WORKSPACE</span><h1 id="dashboard-title">Your account<span>.</span></h1><p>Keep track of names you want to research. Your watchlist is private to this sign-in.</p></div><button id="logoutButton" class="secondary-button" type="button">Sign out</button></div>
+
+      <div class="dashboard-grid">
+        <section class="watchlist-card panel" aria-labelledby="watchlist-title">
+          <div class="panel-heading"><div><span class="eyebrow">SAVED TO YOUR PROFILE</span><h2 id="watchlist-title">Watchlist <span id="watchCount" class="count-badge">0</span></h2></div><span class="panel-ornament" aria-hidden="true">✳</span></div>
+          <p class="panel-description">Add ticker symbols to organize your research. The stock map’s device-only Watch basket does not sync automatically.</p>
+          <form id="watchForm" class="watch-form" novalidate><label for="watchTicker">ADD A SYMBOL</label><div class="watch-input-row"><input id="watchTicker" name="ticker" maxlength="15" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="e.g. AAPL" required /><button id="watchSubmit" type="submit">Add to watchlist <span aria-hidden="true">＋</span></button></div></form>
+          <div id="watchNotice" class="form-notice" role="status" aria-live="polite" hidden></div>
+          <div class="list-head"><span>SYMBOL</span><span>ACTION</span></div>
+          <div id="watchList" class="watch-list" aria-live="polite"><div class="empty-watch">Loading your watchlist…</div></div>
+        </section>
+
+        <aside class="account-rail">
+          <section class="identity-card panel" aria-labelledby="identity-title"><span class="eyebrow">SIGNED IN AS</span><div class="identity-avatar" aria-hidden="true">S</div><h2 id="identity-title">Research profile</h2><p id="accountEmail">—</p><span class="session-indicator"><i aria-hidden="true"></i> PRIVATE SESSION</span></section>
+          <section class="availability-card panel" aria-labelledby="availability-title"><span class="eyebrow">ACCOUNT STATUS</span><h2 id="availability-title">Research access is ready.</h2><p>Funding, live balances, holdings, and trading are unavailable in customer accounts until each user can connect and authorize their own broker securely.</p><a href="/">Explore stock map <span aria-hidden="true">↗</span></a></section>
+          <p class="rail-footnote">A watchlist is a research aid, not a recommendation or a portfolio. Prices and company details can change.</p>
+        </aside>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer"><span>STONK / CUSTOMER ACCOUNT</span><span>Research only · No customer funding or trading available</span></footer>
+  <script type="module" src="/src/account.js"></script>
+</body>
+</html>

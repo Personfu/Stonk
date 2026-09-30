@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#050505" />
-    <meta name="description" content="Stonk trading terminal: source-linked company relationships, minute market signals, and guarded trading rule drafts." />
+    <meta name="description" content="Explore editorial stock candidates, search a U.S. listing directory, and review source-linked company research. Market screens appear when fresh data is available." />
     <title>Stonk Terminal</title>
     <link rel="stylesheet" href="./src/styles.css" />
     <script src="./src/data.js" defer></script>
@@ -29,7 +29,7 @@
         <div class="header-search-wrap">
           <label class="search-field" for="global-search">
             <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8.7" cy="8.7" r="5.8"></circle><path d="m13 13 4.1 4.1"></path></svg>
-            <input id="global-search" type="search" autocomplete="off" placeholder="Search records or enter a ticker..." aria-controls="search-results" />
+            <input id="global-search" type="search" autocomplete="off" placeholder="Search U.S. listings or enter a ticker..." aria-controls="search-results" />
             <kbd class="search-shortcut">/</kbd>
             <button id="open-ticker" class="ticker-go" type="button" title="Open ticker workspace">GO</button>
           </label>
@@ -37,6 +37,7 @@
         </div>
 
         <div class="topbar-actions">
+          <a class="desk-link account-link" href="./account.html">Account <span aria-hidden="true">↗</span></a>
           <a class="desk-link" href="./trading.html">Trading desk <span aria-hidden="true">↗</span></a>
           <span class="topbar-date" id="topbar-date">Data as of —</span>
           <button class="watch-button" id="watch-button" type="button" aria-pressed="false">
@@ -47,38 +48,38 @@
       </header>
 
       <div class="feed-banner" id="feed-banner" role="status">
-        <div><span class="feed-dot" aria-hidden="true"></span><strong id="feed-status-text">Checking market feed</strong><span class="feed-divider">/</span><span id="feed-status-detail">No recommendation until fresh market inputs arrive.</span></div>
-        <span class="feed-mode">60 SECOND SCAN</span>
+        <div><span class="feed-dot" aria-hidden="true"></span><strong id="feed-status-text">Checking market screen</strong><span class="feed-divider">/</span><span id="feed-status-detail">The candidate map is available while market data is checked.</span></div>
+        <span class="feed-mode">CHECKS EVERY 60S</span>
       </div>
 
       <main id="home-content" class="home-content" hidden>
         <div class="home-heading">
-          <div><span class="section-overline">STONK / MARKET TERMINAL</span><h1>U.S. equity map <span>50 candidates</span></h1><p>An editorial discovery universe across established, growing, and specialty companies. Nodes are research entry points, not recommendations.</p></div>
+          <div><span class="section-overline">STONK / MARKET RESEARCH</span><h1>Explore U.S. equities <span>50 candidates</span></h1><p>Select a node to inspect an editorial candidate, or search the wider bundled U.S. listing directory. Fresh market screens appear separately when data is available.</p></div>
           <div class="home-status"><span id="home-screener-status">CHECKING SCREENER</span><small id="home-asof">Market data —</small></div>
         </div>
         <div class="home-command panel">
           <label for="home-search">FIND A STOCK</label>
-          <input id="home-search" type="search" autocomplete="off" placeholder="Search any U.S. company or ticker…" aria-controls="home-suggestions" />
-          <button id="home-open-ticker" type="button">Open terminal ↗</button>
+          <input id="home-search" type="search" autocomplete="off" placeholder="Search U.S. listings or enter a ticker…" aria-controls="home-suggestions" />
+          <button id="home-open-ticker" type="button">Open ticker ↗</button>
           <span id="home-search-count">50 candidates</span>
           <div id="home-suggestions" class="home-suggestions" hidden></div>
         </div>
         <div class="home-grid">
           <section class="network-panel panel" aria-labelledby="network-title">
-            <div class="home-panel-head"><div><span class="section-overline">CANDIDATE NETWORK</span><h2 id="network-title">Stock web</h2></div><div class="network-legend"><span><i></i> Candidate</span><span><i></i> Theme hub</span></div></div>
-            <div class="network-frame-wrap"><div class="network-frame"><svg id="stock-network" viewBox="0 0 1000 540" role="group" aria-label="Interactive network of U.S. stock candidates grouped by editorial themes"></svg><div id="network-unavailable" class="network-unavailable" hidden>Candidate map temporarily unavailable. Use the directory below to open a stock.</div></div><span class="network-scroll-hint" aria-hidden="true">SWIPE MAP ↔</span></div>
-            <div class="network-toolbar"><span id="home-universe-count">— candidates</span><span>Lines group editorial themes; they do not show business relationships.</span><a id="home-universe-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Universe source ↗</a></div>
+            <div class="home-panel-head"><div><span class="section-overline">EDITORIAL UNIVERSE</span><h2 id="network-title">Candidate map</h2></div><div class="network-legend"><span><i></i> Candidate</span><span><i></i> Theme hub</span></div></div>
+            <div class="network-frame-wrap"><div class="network-frame"><svg id="stock-network" viewBox="0 0 1000 540" role="group" aria-label="Interactive network of U.S. stock candidates grouped by editorial themes"></svg><div id="network-unavailable" class="network-unavailable" hidden>Candidate map unavailable. Search a ticker above to open its workspace.</div></div><span class="network-scroll-hint" aria-hidden="true">SWIPE MAP ↔</span></div>
+            <div class="network-toolbar"><span id="home-universe-count">— candidates</span><span>Lines group editorial themes; they do not show business relationships.</span><span id="home-universe-asof">Directory date —</span><a id="home-universe-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Directory source ↗</a></div>
             <div class="candidate-strip"><div class="candidate-strip-head"><strong>Candidate directory</strong><span id="candidate-visible-count">— shown</span></div><div id="candidate-list" class="candidate-list" aria-live="polite"></div></div>
           </section>
           <aside class="discovery-rail">
             <section class="ranking-panel panel" aria-labelledby="ranking-title">
-              <div class="home-panel-head"><div><span class="section-overline">LIVE SCREEN</span><h2 id="ranking-title">Signal ranking</h2></div><span id="ranked-count" class="count-badge">—</span></div>
-              <p class="ranking-caption">Ranks appear only for stocks with fresh market data and reasoned signals.</p>
-              <div id="ranked-list" class="ranked-list" aria-live="polite"><p class="rail-empty">Checking market data…</p></div>
+              <div class="home-panel-head"><div><span class="section-overline">MARKET DATA</span><h2 id="ranking-title">Fresh research screens</h2></div><span id="ranked-count" class="count-badge">—</span></div>
+              <p class="ranking-caption">Ranks require recent sourced prices. Scores are research heuristics, not forecasts.</p>
+              <div id="ranked-list" class="ranked-list" aria-live="polite"><p class="rail-empty">Checking for fresh market data…</p></div>
               <div class="ranking-foot"><span id="home-checked">Checked —</span><span id="home-next">Next —</span><a id="home-market-source" href="#" target="_blank" rel="noopener noreferrer" hidden>Market source ↗</a></div>
             </section>
             <section class="candidate-detail-panel panel" aria-labelledby="candidate-detail-title">
-              <div class="home-panel-head"><div><span class="section-overline">SELECTED NODE</span><h2 id="candidate-detail-title">Inspect a candidate</h2></div></div>
+              <div class="home-panel-head"><div><span class="section-overline">SELECTED CANDIDATE</span><h2 id="candidate-detail-title">Inspect a company</h2></div></div>
               <div id="candidate-detail" class="candidate-detail"><p class="rail-empty">Select a node or a directory row to inspect its company and open the full terminal.</p></div>
             </section>
             <section class="basket-panel panel" aria-labelledby="basket-title"><div class="home-panel-head"><div><span class="section-overline">SAVED LOCALLY</span><h2 id="basket-title">Watch basket</h2></div><span id="basket-count" class="count-badge">0</span></div><div id="basket-list" class="basket-list"></div><p>Saved tickers are a watchlist, not trade recommendations.</p></section>
@@ -100,7 +101,7 @@
           <div class="tape-cell"><span>1M CLOSE</span><strong id="tape-price">—</strong><small id="tape-price-foot">Market feed unavailable</small></div>
           <div class="tape-cell"><span>DAY CHANGE</span><strong id="tape-change">—</strong><small id="tape-change-foot">Awaiting data</small></div>
           <div class="tape-cell"><span>1M VOLUME</span><strong id="tape-volume">—</strong><small id="tape-volume-foot">Awaiting data</small></div>
-          <div class="tape-cell signal-tape-cell"><span>DAY SIGNAL</span><strong id="tape-signal">—</strong><small id="tape-signal-foot">No current recommendation</small></div>
+          <div class="tape-cell signal-tape-cell"><span>INTRADAY SCREEN</span><strong id="tape-signal">—</strong><small id="tape-signal-foot">No current screen</small></div>
           <div class="tape-cell account-cell"><span>POSITION</span><strong id="tape-position">—</strong><small>Open trading desk for account</small></div>
           <div class="tape-cell account-cell"><span>UNREALIZED P&amp;L</span><strong id="tape-pnl">—</strong><small class="pnl-legend"><span class="positive">▲ gain</span><span class="negative">▼ loss</span><span>· not loaded here</span></small></div>
         </div>
@@ -129,10 +130,11 @@
             </div>
 
             <section class="signal-monitor" aria-labelledby="signal-heading">
-              <div class="signal-monitor-head"><div><span class="section-overline">60 SECOND SCAN</span><h3 id="signal-heading">Two trading horizons</h3></div><div class="signal-monitor-tools"><span id="signal-state" class="signal-state">CONNECTING</span><button id="signal-refresh" type="button" class="signal-refresh" aria-label="Refresh both horizon screens">↻</button></div></div>
+              <div class="signal-monitor-head"><div><span class="section-overline">AUTOMATIC CHECK · 60S</span><h3 id="signal-heading">Research screens</h3></div><div class="signal-monitor-tools"><span id="signal-state" class="signal-state">CHECKING</span><button id="signal-refresh" type="button" class="signal-refresh" aria-label="Refresh both research screens">↻</button></div></div>
+              <p class="signal-monitor-caption">BUY, SELL, and WATCH are heuristic research labels. Scores do not predict profit; orders are handled in the separate trading desk.</p>
               <div class="horizon-grid" aria-live="polite">
                 <article class="horizon-card" id="intraday-card" aria-labelledby="intraday-heading">
-                  <div class="horizon-card-head"><h4 id="intraday-heading">DAY TRADE <small>1M INPUTS</small></h4><span id="intraday-state" class="horizon-state">CHECKING</span></div>
+                  <div class="horizon-card-head"><h4 id="intraday-heading">INTRADAY <small>1M INPUTS</small></h4><span id="intraday-state" class="horizon-state">CHECKING</span></div>
                   <div class="horizon-card-main"><strong id="intraday-action" class="horizon-action">NO SIGNAL</strong><span id="intraday-confidence">Waiting for data</span></div>
                   <p id="intraday-short-reason" class="horizon-short-reason">A current minute scan is required.</p>
                   <div class="horizon-bottom"><div><span id="intraday-net-label">OBSERVED MOVE AFTER COSTS</span><strong id="intraday-net">—</strong><small id="intraday-net-note">Historical scenario unavailable</small></div><div><span>DATA AS OF</span><strong id="intraday-asof">—</strong><small id="intraday-source">Source unavailable</small></div></div>

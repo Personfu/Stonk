@@ -18,9 +18,9 @@ function response() {
   };
 }
 
-function request(order, execute = true, authorized = true) {
+function request(order, execute = true, authorized = true, requestId) {
   return { method: "POST", headers: authorized ? { authorization: "Bearer test-operator-secret" } : {},
-    body: { order, execute } };
+    body: { order, execute, requestId } };
 }
 
 test("manual live order endpoint rejects unsafe shapes before any broker request", async () => {
@@ -56,13 +56,14 @@ test("manual live order endpoint rejects unsafe shapes before any broker request
 });
 
 test("valid debit vertical is canonicalized before a mocked live submission", async () => {
-  const names = ["STONK_TRADING_SECRET", "STONK_ALLOW_LIVE_TRADING", "ALPACA_API_KEY_ID",
+  const names = ["STONK_TRADING_SECRET", "STONK_ALLOW_LIVE_TRADING", "STONK_SINGLE_OWNER_ACCOUNT", "ALPACA_API_KEY_ID",
     "ALPACA_API_SECRET_KEY", "STONK_MAX_RISK_PER_TRADE_USD"];
   const prior = Object.fromEntries(names.map((name) => [name, process.env[name]]));
   const previousFetch = global.fetch;
   Object.assign(process.env, {
     STONK_TRADING_SECRET: "test-operator-secret",
     STONK_ALLOW_LIVE_TRADING: "I_UNDERSTAND_REAL_MONEY",
+    STONK_SINGLE_OWNER_ACCOUNT: "I_UNDERSTAND_ONE_SHARED_ACCOUNT",
     ALPACA_API_KEY_ID: "mock-key",
     ALPACA_API_SECRET_KEY: "mock-secret",
     STONK_MAX_RISK_PER_TRADE_USD: "250",
@@ -87,9 +88,15 @@ test("valid debit vertical is canonicalized before a mocked live submission", as
     assert.equal(brokerRequests.length, 1);
     assert.equal(preview.body.order.notional, undefined);
     assert.equal(preview.body.order.legs[0].extra, undefined);
+    assert.match(preview.body.requestId, /^[0-9a-f-]{36}$/);
+
+    const missingId = response();
+    await orderHandler(request(proposed, true), missingId);
+    assert.equal(missingId.statusCode, 400);
+    assert.equal(brokerRequests.length, 1);
 
     const execution = response();
-    await orderHandler(request(proposed, true), execution);
+    await orderHandler(request(proposed, true, true, preview.body.requestId), execution);
     assert.equal(execution.statusCode, 200);
     assert.equal(execution.body.preview, false);
     assert.equal(brokerRequests.length, 3);
@@ -98,7 +105,14 @@ test("valid debit vertical is canonicalized before a mocked live submission", as
     assert.equal(sent.legs[0].extra, undefined);
     assert.match(sent.client_order_id, /^stonk-[0-9a-f-]{36}$/);
     assert.notEqual(sent.client_order_id, "caller-supplied");
+    assert.equal(sent.client_order_id, `stonk-${preview.body.requestId}`);
     assert.equal(sent.limit_price, "1.25");
+
+    const retry = response();
+    await orderHandler(request(proposed, true, true, preview.body.requestId), retry);
+    assert.equal(retry.statusCode, 200);
+    const retried = JSON.parse(brokerRequests.at(-1).options.body);
+    assert.equal(retried.client_order_id, sent.client_order_id);
   } finally {
     for (const name of names) {
       if (prior[name] === undefined) delete process.env[name];

@@ -52,7 +52,7 @@ const server = http.createServer(async (req, res) => {
     const target = path.resolve(root, "." + relative);
     const allowedDir = relative.startsWith("/src/") ? path.join(root, "src") :
       relative.startsWith("/data/") ? path.join(root, "data") : null;
-    const publicPath = relative === "/index.html" || relative === "/trading.html" ||
+    const publicPath = relative === "/index.html" || relative === "/trading.html" || relative === "/account.html" ||
       Boolean(allowedDir && /^\/(?:src|data)\/[A-Za-z0-9_./-]+$/.test(relative) &&
         target.startsWith(allowedDir + path.sep));
     if (!target.startsWith(root + path.sep) || !publicPath ||

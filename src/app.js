@@ -334,7 +334,7 @@ function renderSignalHistory() {
     const row = el("div", "signal-history-row");
     const top = el("div", "signal-history-top");
     const action = el("strong", `history-action action-${entry.recommendation}`, entry.recommendation.toUpperCase());
-    top.append(action, el("span", "", entry.horizon === "oneWeek" ? "ONE WEEK" : "DAY TRADE"), el("time", "", formatTime(entry.refreshedAt)));
+    top.append(action, el("span", "", entry.horizon === "oneWeek" ? "ONE WEEK" : "INTRADAY"), el("time", "", formatTime(entry.refreshedAt)));
     row.append(top, el("p", "", entry.reason));
     container.append(row);
   });
@@ -395,7 +395,7 @@ function renderHorizon(key, screen, commonSource) {
   action.textContent = ready ? recommendation.toUpperCase() : status === "stale" ? "STALE" : status === "closed" ? "CLOSED" : "NO SIGNAL";
   action.className = `horizon-action ${ready ? `action-${recommendation}` : status === "stale" ? "action-stale" : "action-none"}`;
   const score = finiteNumber(screen?.score) ? ` · score ${screen.score.toFixed(0)}` : "";
-  text(`#${prefix}-confidence`, ready ? `${screen.confidence || "unrated"} confidence${score}` : status === "stale" ? "Fresh data required" : status === "closed" ? "Regular session only" : "Waiting for data");
+  text(`#${prefix}-confidence`, ready ? `${screen.confidence || "unrated"} data confidence${score}` : status === "stale" ? "Fresh data required" : status === "closed" ? "Regular session only" : "Waiting for data");
   const fallback = key === "oneWeek" ? "A sourced weekly trend is required." : "A current minute scan is required.";
   text(`#${prefix}-short-reason`, agedOut ? "Market bar or quote aged out; waiting for fresh inputs." : reasons[0] || fallback);
   const list = $(`#${prefix}-reasons`);
@@ -423,7 +423,6 @@ function renderHorizon(key, screen, commonSource) {
   const observed = directional ? scenario?.[recommendation === "sell" ? "observedShortAfterCostPct" : "observedLongAfterCostPct"] : null;
   text(`#${prefix}-net-label`, directional ? `PAST ${recommendation === "sell" ? "SHORT" : "LONG"} AFTER ASSUMED COSTS` : "PAST MOVE AFTER ASSUMED COSTS");
   net.textContent = finiteNumber(observed) ? signedPercent(observed) : "—";
-  net.className = finiteNumber(observed) ? observed > 0 ? "positive" : observed < 0 ? "negative" : "" : "";
   const note = directional && finiteNumber(observed) ? "Past observed move; not a forecast or account P&L" : "No directional cost scenario";
   text(`#${prefix}-net-note`, note);
   $(`#${prefix}-net-note`).title = note;
@@ -446,8 +445,7 @@ function renderSignal() {
   text("#tape-price-foot", dayReady && intraday.asOf ? `As of ${screenDate(intraday.asOf)}` : "Market feed unavailable");
   text("#tape-change-foot", dayReady ? "Versus previous close" : "Awaiting data");
   text("#tape-volume-foot", dayReady ? "Latest minute bar" : "Awaiting data");
-  text("#tape-signal-foot", dayReady ? `${intraday.confidence || "unrated"} confidence` : "No current recommendation");
-  $("#tape-change").className = dayReady && finiteNumber(change) ? change > 0 ? "positive" : change < 0 ? "negative" : "" : "";
+  text("#tape-signal-foot", dayReady ? `${intraday.confidence || "unrated"} data confidence` : "No current screen");
   $("#tape-signal").className = dayReady ? `action-${String(intraday.recommendation).toLowerCase()}` : "";
 
   renderHorizon("intraday", intraday, commonSource);
@@ -468,9 +466,9 @@ function renderSignal() {
   text("#signal-source-label", commonSource.name ? `${commonSource.name}${commonSource.feed ? ` · ${commonSource.feed}` : ""}` : "Source unavailable");
   const banner = $("#feed-banner");
   banner.dataset.status = status;
-  text("#feed-status-text", status === "ready" ? "Market screens ready" : status === "closed" ? "Regular session closed" : status === "stale" ? "Market inputs stale" : terminal.loading ? "Checking market feed" : "Market feed unavailable");
+  text("#feed-status-text", status === "ready" ? "Research screens available" : status === "closed" ? "Regular session closed" : status === "stale" ? "Market inputs stale" : terminal.loading ? "Checking market screen" : "Market screen unavailable");
   const feedCaveat = String(commonSource.feed || "").toLowerCase().includes("iex") ? "IEX single venue; prices may differ from the consolidated tape." : "Heuristic screens are information, not orders.";
-  text("#feed-status-detail", status === "ready" ? feedCaveat : clientStale ? "Market bar or quote aged out; waiting for fresh inputs." : screenReasons(intraday)[0] || screenReasons(oneWeek)[0] || "No recommendation until fresh market inputs arrive.");
+  text("#feed-status-detail", status === "ready" ? feedCaveat : clientStale ? "Market bar or quote aged out; waiting for fresh inputs." : screenReasons(intraday)[0] || screenReasons(oneWeek)[0] || "Research screens require fresh market inputs.");
   renderSignalHistory();
   scheduleTerminalExpiry(intraday, oneWeek);
 }
@@ -516,7 +514,8 @@ async function fetchSignal(ticker) {
     terminal.history = terminal.history.slice(0, 12);
   } catch {
     if (terminal.requestId !== requestId || state.ticker !== ticker) return;
-    terminal.payload = { status: "unavailable", ticker };
+    terminal.payload = { status: "unavailable", ticker,
+      reasons: ["Market screen could not be reached. Try refreshing when the feed is available."] };
     terminal.checkedAt = new Date().toISOString();
   } finally {
     clearTimeout(timeout);
@@ -545,6 +544,7 @@ async function loadCandidateFallback() {
   return {
     status: "unavailable", candidates: universe.candidates.map(([ticker, cluster, scale]) =>
       ({ ticker, name: ticker, cluster, scale })), ranked: [],
+    reason: "Market screen could not be reached. The saved candidate map remains available.",
     source: { universe: { name: universe.source?.name, url: universe.source?.url, asOf: universe.asOf }, marketData: null },
   };
 }
@@ -673,8 +673,8 @@ function renderCandidateDetail() {
     el("span", "", `${candidate.scale || "unclassified"} · editorial group`));
   container.append(facts);
   const ranked = freshRankedRows().find((row) => row.ticker === candidate.ticker);
-  container.append(el("p", "candidate-detail-note", ranked ? `Latest sourced screen: ${String(ranked.recommendation).toUpperCase()} · score ${ranked.score ?? "—"}. Open the terminal for both horizons and reasons.`
-    : "Candidate only. No current ranked signal is available for this stock."));
+  container.append(el("p", "candidate-detail-note", ranked ? `Fresh research screen: ${String(ranked.recommendation).toUpperCase()} · directional score ${ranked.score ?? "—"}. Open the terminal for inputs and reasons.`
+    : "Editorial candidate only. No fresh market screen is available for this stock."));
   const actions = el("div", "candidate-actions");
   const open = el("button", "primary-button", "Open terminal ↗");
   open.type = "button";
@@ -713,9 +713,10 @@ function renderRanking() {
   const rows = freshRankedRows();
   text("#ranked-count", rows.length);
   if (!rows.length) {
-    container.append(el("p", "rail-empty", screener.loading && (!screener.payload || !screenerCurrent()) ? "Refreshing market screen; earlier rankings are hidden…"
-      : Array.isArray(screener.payload?.ranked) && screener.payload.ranked.length ? "Previous ranked inputs have aged out. A fresh scan is required."
-        : screener.payload?.reason || "No ranked signals yet. The 50 network nodes remain research candidates, not picks."));
+    container.append(el("p", "rail-empty", screener.loading && (!screener.payload || !screenerCurrent()) ? "Checking market data; earlier rankings are hidden…"
+      : Array.isArray(screener.payload?.ranked) && screener.payload.ranked.length ? "Previous market inputs have aged out. Fresh screens are required."
+        : screener.payload?.status === "unconfigured" ? "Market feed is not connected. The candidate map and listing search remain available."
+        : screener.payload?.reason || "No fresh market screens are available. Explore the candidate map or search a ticker."));
     return;
   }
   rows.slice(0, 12).forEach((row) => {
@@ -774,13 +775,16 @@ function renderHome() {
     : ["ready", "partial", "unconfigured", "closed"].includes(payload?.status) ? payload.status : "unavailable";
   const visibleStatus = ["ready", "partial"].includes(status) && expiredRows
     ? freshRows.length ? "partial" : "refreshing" : status;
-  text("#home-screener-status", screener.loading && !payload ? "CHECKING SCREENER" : visibleStatus.toUpperCase());
+  const statusLabels = { ready: "FRESH DATA", partial: "PARTIAL DATA", unconfigured: "FEED NOT CONNECTED",
+    closed: "SESSION CLOSED", refreshing: "CHECKING DATA", unavailable: "DATA UNAVAILABLE" };
+  text("#home-screener-status", screener.loading && !payload ? "CHECKING DATA" : statusLabels[visibleStatus]);
   $("#home-screener-status").dataset.status = visibleStatus;
   text("#home-asof", payload?.asOf ? `${visibleStatus === "refreshing" ? "Last market data" : "Market as of"} ${formatTime(payload.asOf)}` : "Market data unavailable");
   text("#home-universe-count", `${candidates.length} candidates · not recommendations`);
   text("#home-checked", `Checked ${formatTime(payload?.refreshedAt || screener.checkedAt)}`);
   text("#home-next", `Next ${formatTime(payload?.nextRefreshAt)}`);
   const universe = payload?.source?.universe || {};
+  text("#home-universe-asof", universe.asOf ? `Directory as of ${formatDate(universe.asOf)}` : "Directory date unavailable");
   const universeLink = $("#home-universe-source");
   universeLink.hidden = !validSource(universe.url);
   if (!universeLink.hidden) universeLink.href = validSource(universe.url);
@@ -790,10 +794,10 @@ function renderHome() {
   if (!marketLink.hidden) marketLink.href = validSource(market.url);
   const banner = $("#feed-banner");
   banner.dataset.status = visibleStatus === "ready" || visibleStatus === "partial" ? "ready" : "unavailable";
-  text("#feed-status-text", visibleStatus === "ready" ? "Screener ready" : visibleStatus === "partial" ? "Partial market coverage" : visibleStatus === "closed" ? "Regular session closed" : visibleStatus === "refreshing" ? "Refreshing market screen" : "No ranked market signals");
+  text("#feed-status-text", visibleStatus === "ready" ? "Fresh research screens available" : visibleStatus === "partial" ? "Partial market coverage" : visibleStatus === "closed" ? "Regular session closed" : visibleStatus === "refreshing" ? "Checking market data" : visibleStatus === "unconfigured" ? "Market feed not connected" : "Market screen unavailable");
   text("#feed-status-detail", visibleStatus === "refreshing" ? "Earlier rankings are hidden until fresh market inputs arrive."
     : expiredRows ? "Expired stock screens are hidden while other fresh scans remain visible."
-    : payload?.reason || `${candidates.length} editorial candidates · ranked picks require fresh sourced market data.`);
+    : payload?.reason || `${candidates.length} editorial candidates are available; rankings require fresh sourced market data.`);
   renderStockWeb(); renderCandidateList(); renderCandidateDetail(); renderRanking(); renderBasket();
   scheduleScreenerExpiry();
 }
@@ -820,9 +824,11 @@ async function fetchScreener() {
     if (!candidateArray().length) {
       try { screener.payload = await loadCandidateFallback(); } catch { /* Directory remains accessible once the feed recovers. */ }
     } else {
-      screener.payload = { status: "unavailable", candidates: priorCandidates, ranked: [], source: priorSource };
+      screener.payload = { status: "unavailable", candidates: priorCandidates, ranked: [], source: priorSource,
+        reason: "Market screen could not be reached. The candidate map remains available; rankings are hidden." };
     }
-    screener.payload ||= { status: "unavailable", candidates: [], ranked: [], source: {} };
+    screener.payload ||= { status: "unavailable", candidates: [], ranked: [], source: {},
+      reason: "Market screen and candidate map could not be loaded. You can still enter a ticker above." };
     screener.checkedAt = new Date().toISOString();
   } finally {
     clearTimeout(timeout);

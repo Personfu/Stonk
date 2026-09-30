@@ -20,6 +20,12 @@ export default async function handler(req, res) {
     method(req, ["POST"]);
     requireOperator(req, { mutation: true });
     const payload = await body(req);
+    const validRequestId = typeof payload.requestId === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(payload.requestId);
+    if (payload.requestId !== undefined && !validRequestId) rejection("Invalid requestId");
+    if (payload.execute === true && !validRequestId) {
+      rejection("A preview requestId is required for live execution");
+    }
     const validated = validateLongDebitVertical(payload.order);
     if (!validated) rejection("Only 1:1 long debit call or put verticals with a positive limit price are accepted");
 
@@ -42,10 +48,11 @@ export default async function handler(req, res) {
     }
 
     if (payload.execute !== true) {
-      return send(res, 200, { ok: true, preview: true, mode: tradingMode(), risk,
+      const requestId = validRequestId ? payload.requestId.toLowerCase() : randomUUID();
+      return send(res, 200, { ok: true, preview: true, mode: tradingMode(), risk, requestId,
         requiredOptionsLevel: requiredLevel, account, order });
     }
-    const brokerOrder = { ...order, client_order_id: `stonk-${randomUUID()}` };
+    const brokerOrder = { ...order, client_order_id: `stonk-${payload.requestId.toLowerCase()}` };
     const placed = await submitOrder(brokerOrder);
     return send(res, 200, { ok: true, preview: false, mode: tradingMode(), risk,
       requiredOptionsLevel: requiredLevel, order: placed });
