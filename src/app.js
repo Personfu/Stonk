@@ -838,7 +838,7 @@ async function fetchScreener() {
 
 function showHome() {
   state.ticker = null;
-  $(".desk-link").href = "./trading.html";
+  $("#trading-desk-link").href = "./trading.html";
   $("#skip-link").href = "#home-content";
   terminal.requestId++;
   clearTimeout(terminalExpiryTimer);
@@ -859,7 +859,7 @@ function renderProfile() {
   const name = company.name || state.ticker;
   const asOf = company.asOf ? formatDate(company.asOf) : "Date unavailable";
   document.title = `${state.ticker} Terminal · Stonk`;
-  $(".desk-link").href = `./trading.html?ticker=${encodeURIComponent(state.ticker)}`;
+  $("#trading-desk-link").href = `./trading.html?ticker=${encodeURIComponent(state.ticker)}`;
   text("#topbar-workspace", `${state.ticker} terminal`);
   text("#breadcrumb-ticker", state.ticker);
   text("#heading-ticker", state.ticker);
