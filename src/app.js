@@ -34,7 +34,11 @@ const state = {
   lastDrawerTrigger: null,
 };
 const terminal = { payload: null, history: [], checkedAt: null, loading: false, requestId: 0 };
-const screener = { payload: null, checkedAt: null, loading: false, requestId: 0, search: "", selectedTicker: null, mapCentered: false };
+const screener = { payload: null, checkedAt: null, loading: false, requestId: 0, search: "", selectedTicker: null };
+const map3d = {
+  yaw: .35, pitch: -.16, zoom: 1, signature: "", points: [], hubs: [], screen: [],
+  drag: null, selectedAt: 0, frame: 0, profileCache: new Map(), profileResults: new Map(),
+};
 let terminalExpiryTimer;
 let screenerExpiryTimer;
 
@@ -556,94 +560,303 @@ function matchingCandidates() {
 }
 
 function selectCandidate(ticker, restoreFocus = false) {
-  screener.selectedTicker = safeTicker(ticker);
-  renderStockWeb(screener.selectedTicker);
+  const next = safeTicker(ticker);
+  if (!next) return;
+  if (screener.selectedTicker !== next) map3d.selectedAt = performance.now();
+  screener.selectedTicker = next;
+  homeSuggestionsDismissed = true;
+  clearTimeout(homeSuggestionTimer);
+  homeSuggestions = [];
+  renderHomeSuggestions();
+  renderStockWeb();
   renderCandidateList();
   renderCandidateDetail();
-  if (restoreFocus) [...$("#stock-network").querySelectorAll(".web-stock-node")]
-    .find((node) => node.dataset.ticker === screener.selectedTicker)?.focus({ preventScroll: true });
+  renderMapPopover();
+  requestMapProfile(next);
+  if (restoreFocus) [...$("#candidate-list").querySelectorAll(".candidate-row")]
+    .find((node) => node.dataset.ticker === next)?.focus({ preventScroll: true });
 }
 
-function renderStockWeb(focusTicker = null) {
-  const svg = $("#stock-network");
-  svg.replaceChildren();
-  const candidates = candidateArray();
-  $("#network-unavailable").hidden = candidates.length > 0;
-  if (!candidates.length) return;
-
-  svg.append(svgEl("title", {}, "50 U.S. stock candidates grouped by editorial cluster; these are not recommendations"));
-  const background = svgEl("g", { class: "web-background", "aria-hidden": "true" });
-  for (const [rx, ry] of [[435, 232], [355, 188], [275, 145], [195, 102]]) {
-    background.append(svgEl("ellipse", { cx: 500, cy: 270, rx, ry }));
-  }
-  background.append(svgEl("line", { x1: 65, y1: 270, x2: 935, y2: 270 }));
-  background.append(svgEl("line", { x1: 500, y1: 38, x2: 500, y2: 502 }));
-  svg.append(background);
-  const edges = svgEl("g", { class: "web-edges", "aria-hidden": "true" });
-  const hubs = svgEl("g", { class: "web-hubs", "aria-hidden": "true" });
-  const nodes = svgEl("g", { class: "web-nodes" });
+function buildMapGeometry(candidates) {
+  const signature = candidates.map((row) => `${row.ticker}:${row.cluster}`).join("|");
+  if (map3d.signature === signature) return;
+  map3d.signature = signature;
   const groups = new Map();
   candidates.forEach((candidate) => {
-    const cluster = String(candidate.cluster || "Other");
-    if (!groups.has(cluster)) groups.set(cluster, []);
-    groups.get(cluster).push(candidate);
+    const name = String(candidate.cluster || "Other");
+    if (!groups.has(name)) groups.set(name, []);
+    groups.get(name).push(candidate);
   });
   const clusters = [...groups.keys()];
-  clusters.forEach((cluster, groupIndex) => {
-    const centerAngle = -Math.PI / 2 + groupIndex * 2 * Math.PI / clusters.length;
-    const hubX = 500 + Math.cos(centerAngle) * 210;
-    const hubY = 270 + Math.sin(centerAngle) * 108;
-    edges.append(svgEl("line", { x1: 500, y1: 270, x2: hubX, y2: hubY, class: "hub-link" }));
-    const hub = svgEl("g", { class: "web-hub" });
-    hub.append(svgEl("circle", { cx: hubX, cy: hubY, r: 5 }));
-    hub.append(svgEl("text", { x: hubX, y: hubY - 11, "text-anchor": "middle" }, cluster.toUpperCase().slice(0, 17)));
-    hubs.append(hub);
-
-    const group = groups.get(cluster);
-    const sectorWidth = 2 * Math.PI / clusters.length;
-    const step = Math.min(.12, sectorWidth * .76 / (group.length + 1));
-    group.forEach((candidate, index) => {
-      const angle = centerAngle + (index - (group.length - 1) / 2) * step;
-      const outer = index % 2 === 0;
-      const x = 500 + Math.cos(angle) * (outer ? 425 : 343);
-      const y = 270 + Math.sin(angle) * (outer ? 224 : 180);
-      edges.append(svgEl("line", { x1: hubX, y1: hubY, x2: x, y2: y, class: "stock-link" }));
-      const ticker = safeTicker(candidate.ticker);
-      const visible = !screener.search || matchingCandidates().some((item) => item.ticker === ticker);
-      const selected = screener.selectedTicker === ticker;
-      const node = svgEl("g", { class: `web-stock-node${visible ? "" : " dimmed"}${selected ? " selected" : ""}`,
-        tabindex: "0", role: "button", "aria-label": `Inspect ${candidate.name} (${ticker})`, "data-ticker": ticker });
-      node.append(svgEl("circle", { cx: x, cy: y, r: 19 }));
-      node.append(svgEl("text", { x, y: y + 3, "text-anchor": "middle", "font-size": ticker.length > 4 ? 8 : 9 }, ticker));
-      node.append(svgEl("title", {}, `${candidate.name} (${ticker}) · ${cluster}`));
-      node.addEventListener("click", () => selectCandidate(ticker));
-      node.addEventListener("dblclick", () => loadTicker(ticker));
-      node.addEventListener("keydown", (event) => {
-        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); selectCandidate(ticker, true); }
-      });
-      nodes.append(node);
+  map3d.hubs = clusters.map((cluster, groupIndex) => {
+    const angle = -Math.PI / 2 + groupIndex * 2 * Math.PI / clusters.length;
+    return { cluster, x: Math.cos(angle) * 205, y: Math.sin(angle * 2) * 65, z: Math.sin(angle) * 205 };
+  });
+  map3d.points = map3d.hubs.flatMap((hub, groupIndex) => {
+    const group = groups.get(hub.cluster);
+    const angle = -Math.PI / 2 + groupIndex * 2 * Math.PI / clusters.length;
+    return group.map((candidate, index) => {
+      const spread = (index - (group.length - 1) / 2) * .105;
+      const radius = index % 2 ? 380 : 435;
+      return {
+        ...candidate, x: Math.cos(angle + spread) * radius,
+        y: (index - (group.length - 1) / 2) * 84 + Math.sin(angle * 2) * 50,
+        z: Math.sin(angle + spread) * radius, hub,
+      };
     });
   });
-  const center = svgEl("g", { class: "web-center", "aria-hidden": "true" });
-  center.append(svgEl("circle", { cx: 500, cy: 270, r: 47 }));
-  center.append(svgEl("text", { x: 500, y: 266, "text-anchor": "middle" }, "STONK"));
-  center.append(svgEl("text", { x: 500, y: 281, "text-anchor": "middle" }, `${candidates.length} CANDIDATES`));
-  svg.append(edges, hubs, center, nodes);
-  if (window.matchMedia("(max-width: 680px)").matches) {
-    const frame = svg.parentElement;
-    const selectedNode = focusTicker ? [...nodes.children].find((node) => node.dataset.ticker === focusTicker) : null;
-    if (selectedNode) {
-      const x = Number(selectedNode.querySelector("circle")?.getAttribute("cx"));
-      if (Number.isFinite(x)) frame.scrollLeft = Math.max(0, x * svg.clientWidth / 1000 - frame.clientWidth / 2);
-    } else if (!screener.mapCentered) {
-      frame.scrollLeft = (frame.scrollWidth - frame.clientWidth) / 2;
-      screener.mapCentered = true;
-    }
+}
+
+function mapProject(point, width, height) {
+  const cy = Math.cos(map3d.yaw), sy = Math.sin(map3d.yaw);
+  const cp = Math.cos(map3d.pitch), sp = Math.sin(map3d.pitch);
+  const x = point.x * cy + point.z * sy;
+  const z = point.z * cy - point.x * sy;
+  const y = point.y * cp - z * sp;
+  const depth = point.y * sp + z * cp;
+  const fit = Math.min(width / 900, height / 520);
+  const scale = 720 / (940 - depth) * fit * map3d.zoom;
+  return { x: width / 2 + x * scale, y: height / 2 + y * scale, depth, scale };
+}
+
+function drawStockMap() {
+  const canvas = $("#stock-network");
+  if (!canvas || $("#home-content").hidden) return;
+  const width = canvas.clientWidth, height = canvas.clientHeight;
+  if (!width || !height) return;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const pixelWidth = Math.round(width * dpr), pixelHeight = Math.round(height * dpr);
+  if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+    canvas.width = pixelWidth; canvas.height = pixelHeight;
   }
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, width, height);
+  const glow = ctx.createRadialGradient(width / 2, height / 2, 10, width / 2, height / 2, width * .65);
+  glow.addColorStop(0, "#202020"); glow.addColorStop(1, "#080808");
+  ctx.fillStyle = glow; ctx.fillRect(0, 0, width, height);
+  const matched = new Set(matchingCandidates().map((row) => row.ticker));
+  const center = mapProject({ x: 0, y: 0, z: 0 }, width, height);
+  const hubs = map3d.hubs.map((hub) => ({ ...hub, screen: mapProject(hub, width, height) }));
+  const points = map3d.points.map((point) => ({ ...point, screen: mapProject(point, width, height) }))
+    .sort((a, b) => a.screen.depth - b.screen.depth);
+
+  ctx.lineWidth = 1;
+  for (const hub of hubs) {
+    ctx.strokeStyle = "rgba(185,185,185,.15)";
+    ctx.beginPath(); ctx.moveTo(center.x, center.y); ctx.lineTo(hub.screen.x, hub.screen.y); ctx.stroke();
+  }
+  for (const point of points) {
+    const hub = hubs.find((item) => item.cluster === point.cluster);
+    if (!hub) continue;
+    ctx.strokeStyle = matched.has(point.ticker) ? "rgba(215,215,215,.16)" : "rgba(160,160,160,.05)";
+    ctx.beginPath(); ctx.moveTo(hub.screen.x, hub.screen.y);
+    ctx.lineTo(point.screen.x, point.screen.y); ctx.stroke();
+  }
+  hubs.sort((a, b) => a.screen.depth - b.screen.depth).forEach((hub) => {
+    const radius = Math.max(3, 5 * hub.screen.scale + 2);
+    ctx.fillStyle = "#f0f0f0";
+    ctx.beginPath(); ctx.arc(hub.screen.x, hub.screen.y, radius, 0, 2 * Math.PI); ctx.fill();
+    ctx.fillStyle = "#a6a6a6";
+    ctx.font = '9px ui-monospace, "SFMono-Regular", Consolas, monospace';
+    ctx.textAlign = "center";
+    ctx.fillText(hub.cluster.toUpperCase().slice(0, 16), hub.screen.x, hub.screen.y - radius - 8, 112);
+  });
+  ctx.fillStyle = "#f4f4f4";
+  ctx.beginPath(); ctx.arc(center.x, center.y, 26, 0, 2 * Math.PI); ctx.fill();
+  ctx.fillStyle = "#101010"; ctx.font = 'bold 11px ui-monospace, "SFMono-Regular", Consolas, monospace';
+  ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText("STONK", center.x, center.y);
+
+  const selected = points.find((point) => point.ticker === screener.selectedTicker);
+  const ordered = selected ? [...points.filter((point) => point !== selected), selected] : points;
+  map3d.screen = [];
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const progress = selected ? reduced ? 1 : Math.min(1, (performance.now() - map3d.selectedAt) / 240) : 1;
+  for (const point of ordered) {
+    const current = point.ticker === screener.selectedTicker;
+    const faded = !matched.has(point.ticker);
+    const radius = Math.max(11, 23 * point.screen.scale + 4) * (current ? 1 + progress * .95 : 1);
+    const { x, y } = point.screen;
+    ctx.globalAlpha = faded ? .2 : 1;
+    if (current) {
+      ctx.shadowColor = "rgba(255,255,255,.58)"; ctx.shadowBlur = 22;
+    } else {
+      ctx.shadowColor = "rgba(255,255,255,.12)"; ctx.shadowBlur = 7;
+    }
+    const fill = ctx.createRadialGradient(x - radius * .34, y - radius * .38, 1, x, y, radius);
+    fill.addColorStop(0, current ? "#f7f7f7" : "#414141");
+    fill.addColorStop(1, current ? "#d6d6d6" : "#111111");
+    ctx.fillStyle = fill;
+    ctx.strokeStyle = current ? "#fff" : "#a2a2a2";
+    ctx.lineWidth = current ? 2 : 1;
+    ctx.beginPath(); ctx.arc(x, y, radius, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = current ? "#080808" : "#f6f6f6";
+    ctx.font = `700 ${Math.max(9, Math.min(13, radius * .52))}px ui-monospace, "SFMono-Regular", Consolas, monospace`;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    ctx.fillText(point.ticker, x, y, radius * 1.7);
+    ctx.globalAlpha = 1;
+    map3d.screen.push({ ticker: point.ticker, x, y, radius: Math.max(radius, 21), faded });
+  }
+  positionMapPopover();
+  cancelAnimationFrame(map3d.frame);
+  if (selected && progress < 1 && document.visibilityState === "visible") map3d.frame = requestAnimationFrame(drawStockMap);
+}
+
+function renderStockWeb() {
+  const candidates = candidateArray();
+  $("#network-unavailable").hidden = candidates.length > 0;
+  if (!candidates.length) { $("#network-popover").hidden = true; return; }
+  buildMapGeometry(candidates);
+  drawStockMap();
+}
+
+function positionMapPopover() {
+  const popover = $("#network-popover");
+  if (popover.hidden) return;
+  const point = map3d.screen.find((item) => item.ticker === screener.selectedTicker);
+  if (!point || window.matchMedia("(max-width: 680px)").matches) return;
+  const canvas = $("#stock-network");
+  const cardWidth = Math.min(310, canvas.clientWidth - 24);
+  const cardHeight = popover.offsetHeight;
+  let left = point.x + point.radius + 16;
+  if (left + cardWidth > canvas.clientWidth - 12) left = point.x - point.radius - cardWidth - 16;
+  popover.style.left = `${Math.max(12, Math.min(canvas.clientWidth - cardWidth - 12, left))}px`;
+  popover.style.top = `${Math.max(12, Math.min(canvas.clientHeight - cardHeight - 12, point.y - cardHeight / 2))}px`;
+}
+
+function renderMapPopover() {
+  const popover = $("#network-popover");
+  popover.replaceChildren();
+  const candidate = candidateArray().find((row) => row.ticker === screener.selectedTicker);
+  if (!candidate) { popover.hidden = true; return; }
+  popover.hidden = false;
+  const profile = map3d.profileResults.get(candidate.ticker);
+  const curated = profile?.coverage?.label === "Curated public-source coverage";
+  const company = profile?.company;
+  const top = el("div", "map-popover-top");
+  top.append(el("span", "map-popover-kicker", curated ? "SOURCED COMPANY SNAPSHOT" : "LISTED SECURITY"));
+  const close = el("button", "map-popover-close", "×");
+  close.type = "button"; close.setAttribute("aria-label", "Close company summary");
+  close.addEventListener("click", () => {
+    screener.selectedTicker = null; renderStockWeb(); renderCandidateList(); renderCandidateDetail(); renderMapPopover();
+    $("#map-reset").focus({ preventScroll: true });
+  });
+  top.append(close);
+  popover.append(top, el("strong", "map-popover-ticker", candidate.ticker),
+    el("h3", "map-popover-name", company?.name || candidate.name));
+  const category = el("p", "map-popover-category",
+    `${company?.exchange || candidate.exchange || "Exchange unavailable"} · ${curated && company?.sector ? company.sector : candidate.cluster || "Editorial candidate"}`);
+  popover.append(category);
+  const description = curated && company?.description
+    ? company.description
+    : "Directory identity only. A sourced business summary is not available for this ticker yet.";
+  popover.append(el("p", "map-popover-description", description));
+  const ranked = freshRankedRows().find((row) => row.ticker === candidate.ticker);
+  const quote = el("div", "map-popover-quote");
+  if (ranked && finiteNumber(ranked.metrics?.lastPrice)) {
+    quote.append(el("strong", "", marketPrice(ranked.metrics.lastPrice)));
+    const change = el("span", finiteNumber(ranked.metrics?.changePct) && ranked.metrics.changePct >= 0 ? "positive" : "negative",
+      signedPercent(ranked.metrics?.changePct));
+    change.setAttribute("aria-label", `Fresh day change ${signedPercent(ranked.metrics?.changePct)}`);
+    quote.append(change, el("small", "", "Fresh day change · research only"));
+  } else {
+    quote.append(el("span", "map-popover-noquote", "Live quote unavailable"),
+      el("small", "", "No price or trade signal is inferred from this map."));
+  }
+  popover.append(quote);
+  if (curated) {
+    const counts = el("div", "map-popover-counts");
+    counts.append(el("span", "", `${profile.sections?.suppliers?.length || 0} sourced suppliers`),
+      el("span", "", `${profile.sections?.customers?.length || 0} sourced customers`));
+    popover.append(counts);
+  }
+  const actions = el("div", "map-popover-actions");
+  const open = el("button", "primary-button", "Open full terminal ↗");
+  open.type = "button"; open.addEventListener("click", () => loadTicker(candidate.ticker));
+  const watching = state.watchlist.includes(candidate.ticker);
+  const watch = el("button", "watch-button", watching ? "Watching" : "+ Watch");
+  watch.type = "button";
+  watch.addEventListener("click", () => {
+    state.watchlist = watching ? state.watchlist.filter((ticker) => ticker !== candidate.ticker)
+      : [...state.watchlist, candidate.ticker];
+    writeLocal(WATCHLIST_KEY, state.watchlist);
+    renderBasket(); renderCandidateDetail(); renderMapPopover();
+  });
+  actions.append(open, watch); popover.append(actions);
+  if (validSource(company?.sourceUrl)) {
+    const source = el("a", "map-popover-source",
+      `${curated ? "Profile" : "Directory"} source ↗ · ${formatDate(company.asOf)}`);
+    source.href = validSource(company.sourceUrl); source.target = "_blank"; source.rel = "noopener noreferrer";
+    popover.append(source);
+  }
+  positionMapPopover();
+}
+
+function requestMapProfile(ticker) {
+  if (map3d.profileCache.has(ticker) || typeof window.StonkData?.loadCompany !== "function") return;
+  const pending = window.StonkData.loadCompany(ticker).catch(() => null);
+  map3d.profileCache.set(ticker, pending);
+  pending.then((profile) => {
+    map3d.profileResults.set(ticker, profile);
+    if (screener.selectedTicker === ticker && !$("#home-content").hidden) renderMapPopover();
+  });
+}
+
+function bindMapEvents() {
+  const canvas = $("#stock-network");
+  function hit(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = event.clientX - rect.left, y = event.clientY - rect.top;
+    return [...map3d.screen].reverse().find((point) => !point.faded
+      && Math.hypot(point.x - x, point.y - y) <= point.radius + 5);
+  }
+  canvas.addEventListener("pointerdown", (event) => {
+    if (event.button !== 0) return;
+    map3d.drag = { x: event.clientX, y: event.clientY, lastX: event.clientX, lastY: event.clientY, moved: false };
+    canvas.setPointerCapture(event.pointerId);
+  });
+  canvas.addEventListener("pointermove", (event) => {
+    const drag = map3d.drag;
+    if (!drag) { canvas.style.cursor = hit(event) ? "pointer" : "grab"; return; }
+    if (Math.hypot(event.clientX - drag.x, event.clientY - drag.y) > 6) drag.moved = true;
+    if (!drag.moved) return;
+    map3d.yaw += (event.clientX - drag.lastX) * .008;
+    map3d.pitch = Math.max(-.95, Math.min(.95, map3d.pitch + (event.clientY - drag.lastY) * .006));
+    drag.lastX = event.clientX; drag.lastY = event.clientY;
+    canvas.style.cursor = "grabbing";
+    drawStockMap();
+  });
+  canvas.addEventListener("pointerup", (event) => {
+    const drag = map3d.drag;
+    map3d.drag = null; canvas.style.cursor = "grab";
+    if (!drag) return;
+    if (!drag.moved) {
+      const point = hit(event);
+      if (point) selectCandidate(point.ticker);
+    }
+    if (canvas.hasPointerCapture(event.pointerId)) canvas.releasePointerCapture(event.pointerId);
+  });
+  canvas.addEventListener("pointercancel", () => { map3d.drag = null; canvas.style.cursor = "grab"; });
+  for (const [id, amount] of [["#map-left", -.38], ["#map-right", .38]]) {
+    $(id).addEventListener("click", () => { map3d.yaw += amount; drawStockMap(); });
+  }
+  for (const [id, amount] of [["#map-zoom-in", .15], ["#map-zoom-out", -.15]]) {
+    $(id).addEventListener("click", () => {
+      map3d.zoom = Math.max(.65, Math.min(1.65, map3d.zoom + amount)); drawStockMap();
+    });
+  }
+  $("#map-reset").addEventListener("click", () => {
+    map3d.yaw = .35; map3d.pitch = -.16; map3d.zoom = 1; drawStockMap();
+  });
+  if (typeof ResizeObserver === "function") new ResizeObserver(drawStockMap).observe(canvas);
+  else window.addEventListener("resize", drawStockMap);
 }
 
 function renderCandidateList() {
   const container = $("#candidate-list");
+  const focused = container.contains(document.activeElement) ? document.activeElement?.dataset.ticker : null;
   container.replaceChildren();
   const visible = matchingCandidates();
   text("#home-search-count", `${visible.length} / ${candidateArray().length} candidates`);
@@ -652,12 +865,15 @@ function renderCandidateList() {
   visible.forEach((candidate) => {
     const button = el("button", `candidate-row${screener.selectedTicker === candidate.ticker ? " selected" : ""}`);
     button.type = "button";
+    button.dataset.ticker = candidate.ticker;
     const identity = el("span", "candidate-row-identity");
     identity.append(el("strong", "", candidate.ticker), el("span", "", candidate.name));
     button.append(identity, el("small", "", candidate.cluster || "Candidate"));
-    button.addEventListener("click", () => selectCandidate(candidate.ticker));
+    button.addEventListener("click", () => selectCandidate(candidate.ticker, true));
     container.append(button);
   });
+  if (focused) [...container.querySelectorAll(".candidate-row")]
+    .find((node) => node.dataset.ticker === focused)?.focus({ preventScroll: true });
 }
 
 function renderCandidateDetail() {
@@ -674,7 +890,7 @@ function renderCandidateDetail() {
   container.append(facts);
   const ranked = freshRankedRows().find((row) => row.ticker === candidate.ticker);
   container.append(el("p", "candidate-detail-note", ranked ? `Fresh research screen: ${String(ranked.recommendation).toUpperCase()} · directional score ${ranked.score ?? "—"}. Open the terminal for inputs and reasons.`
-    : "Editorial candidate only. No fresh market screen is available for this stock."));
+    : "No fresh market screen is available for this stock. The map card shows company facts when sourced."));
   const actions = el("div", "candidate-actions");
   const open = el("button", "primary-button", "Open terminal ↗");
   open.type = "button";
@@ -798,7 +1014,7 @@ function renderHome() {
   text("#feed-status-detail", visibleStatus === "refreshing" ? "Earlier rankings are hidden until fresh market inputs arrive."
     : expiredRows ? "Expired stock screens are hidden while other fresh scans remain visible."
     : payload?.reason || `${candidates.length} editorial candidates are available; rankings require fresh sourced market data.`);
-  renderStockWeb(); renderCandidateList(); renderCandidateDetail(); renderRanking(); renderBasket();
+  renderStockWeb(); renderCandidateList(); renderCandidateDetail(); renderMapPopover(); renderRanking(); renderBasket();
   scheduleScreenerExpiry();
 }
 
@@ -1093,10 +1309,11 @@ async function scheduleCompanySuggestions(query) {
 
 let homeSuggestionTimer;
 let homeSuggestions = [];
+let homeSuggestionsDismissed = false;
 function renderHomeSuggestions() {
   const container = $("#home-suggestions");
   container.replaceChildren();
-  if (!homeSuggestions.length || !$("#home-search").value.trim()) { container.hidden = true; return; }
+  if (homeSuggestionsDismissed || !homeSuggestions.length || !$("#home-search").value.trim()) { container.hidden = true; return; }
   homeSuggestions.forEach((company) => {
     const button = el("button", "home-suggestion");
     button.type = "button";
@@ -1108,6 +1325,7 @@ function renderHomeSuggestions() {
 }
 
 function scheduleHomeSuggestions(query) {
+  homeSuggestionsDismissed = false;
   clearTimeout(homeSuggestionTimer);
   homeSuggestions = [];
   renderHomeSuggestions();
@@ -1123,8 +1341,13 @@ function scheduleHomeSuggestions(query) {
 }
 
 function bindEvents() {
+  bindMapEvents();
   $("#home-search").addEventListener("input", (event) => {
     screener.search = event.target.value.trim();
+    if (screener.selectedTicker && !matchingCandidates().some((row) => row.ticker === screener.selectedTicker)) {
+      screener.selectedTicker = null;
+      renderCandidateDetail(); renderMapPopover();
+    }
     renderStockWeb(); renderCandidateList();
     scheduleHomeSuggestions(screener.search);
   });
