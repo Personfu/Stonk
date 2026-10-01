@@ -39,6 +39,8 @@ The Account page uses Supabase email authentication for private, cloud-saved tic
 
 **Customer accounts do not connect a broker, accept deposits, or place trades.** The operator desk uses one server-wide Alpaca account and is not a customer brokerage integration. To enable customer money flows, obtain an approved provider integration with per-user account authorization, identity checks, funding, and order lifecycle handling. Supabase Auth's Site URL and redirect allowlist must include the deployed `/account.html` URL for email confirmation and password recovery. The account page never asks for banking credentials.
 
+An isolated Alpaca Broker API transport now covers sandbox account-status, Plaid processor-token ACH linking, deposits, and account-scoped equity limit orders. It has no public route or customer account binding, so it cannot move customer money. The remaining provider and application gates are tracked in [public customer brokerage launch](docs/public-broker-launch.md). Broker API correspondent credentials must never be replaced with the desk's single-owner Trading API keys.
+
 ## Live trading desk
 
 The current broker adapter is **Alpaca live trading**, not Robinhood. The desk displays market movers, most-active names, quote data, SEC EDGAR filings and Company Facts, Alpaca news and corporate actions, optional FRED macro observations, live account state, and an options lab. The options lab normalizes contract snapshots and Greeks, evaluates long options and defined-risk debit spreads, and ranks research candidates using liquidity, payoff shape, and the underlying's 5-day/20-day trend. Its score is research priority, not expected return or probability of profit.
@@ -58,3 +60,4 @@ The requested Pump SDKs and Solana helpers are isolated in `crypto/`; the stock 
 ## Deployment and limits
 
 The interface is static and the `api/` files are Vercel functions. Customer watchlists have per-user access rules; public live market-data display still needs a licensed feed and appropriate rate limits. Do not put a personal market-data key on an anonymous public terminal. The repository's live-only execution controls require a deliberate single-owner operator setup. Market screens and options scores have not been validated with out-of-sample forward results, transaction costs, fills, or broker telemetry. No scanner can promise the most profitable day or one-week trade.
+
