@@ -1,8 +1,8 @@
 // Alpaca Broker API is a separate correspondent integration from the private
 // single-owner Alpaca Trading API in alpaca.js. Never reuse Trading API keys here.
 const HOSTS = Object.freeze({
-  sandbox: "https://broker-api.sandbox.alpaca.markets",
-  live: "https://broker-api.alpaca.markets",
+  sandbox: { broker: "https://broker-api.sandbox.alpaca.markets", auth: "https://authx.sandbox.alpaca.markets" },
+  live: { broker: "https://broker-api.alpaca.markets", auth: "https://authx.alpaca.markets" },
 });
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const SYMBOL = /^[A-Z][A-Z0-9.\-]{0,9}$/;
@@ -40,21 +40,58 @@ export function brokerConfiguration(env = process.env) {
     env.STONK_PUBLIC_BROKER_LIVE !== "I_UNDERSTAND_CUSTOMER_FUNDS" ||
     env.STONK_BROKER_PARTNER_APPROVED !== "true"
   )) throw new BrokerApiError("Public live brokerage is not approved and enabled");
-  const key = env.ALPACA_BROKER_API_KEY;
-  const secret = env.ALPACA_BROKER_API_SECRET;
-  if (!key || !secret) throw new BrokerApiError("Broker API credentials are not configured");
-  return { baseUrl: HOSTS[mode], mode, key, secret };
+  const clientId = env.ALPACA_BROKER_CLIENT_ID;
+  const clientSecret = env.ALPACA_BROKER_CLIENT_SECRET;
+  if (!clientId || !clientSecret) throw new BrokerApiError("Broker API credentials are not configured");
+  return { ...HOSTS[mode], mode, clientId, clientSecret };
 }
 
 export function createBrokerClient({ env = process.env, fetchImpl = fetch } = {}) {
   const config = brokerConfiguration(env);
+  let accessToken = "";
+  let tokenExpiresAt = 0;
+  let tokenPromise = null;
+
+  async function bearerToken() {
+    if (accessToken && Date.now() < tokenExpiresAt - 60000) return accessToken;
+    if (!tokenPromise) {
+      tokenPromise = (async () => {
+        let response;
+        try {
+          response = await fetchImpl(`${config.auth}/v1/oauth2/token`, {
+            method: "POST",
+            headers: { Accept: "application/json", "Content-Type": "application/x-www-form-urlencoded" },
+            body: new URLSearchParams({
+              grant_type: "client_credentials", client_id: config.clientId,
+              client_secret: config.clientSecret,
+            }).toString(),
+            signal: AbortSignal.timeout(12000),
+            cache: "no-store",
+          });
+        } catch {
+          throw new BrokerApiError("Broker authentication did not respond");
+        }
+        const grant = await response.json().catch(() => null);
+        if (!response.ok || typeof grant?.access_token !== "string" ||
+            !Number.isFinite(Number(grant.expires_in)) || Number(grant.expires_in) <= 60) {
+          throw new BrokerApiError("Broker authentication failed");
+        }
+        accessToken = grant.access_token;
+        tokenExpiresAt = Date.now() + Number(grant.expires_in) * 1000;
+        return accessToken;
+      })().finally(() => { tokenPromise = null; });
+    }
+    return tokenPromise;
+  }
+
   async function request(path, { method = "GET", payload } = {}) {
+    const token = await bearerToken();
     let response;
     try {
-      response = await fetchImpl(`${config.baseUrl}${path}`, {
+      response = await fetchImpl(`${config.broker}${path}`, {
         method,
         headers: {
-          Authorization: `Basic ${Buffer.from(`${config.key}:${config.secret}`).toString("base64")}`,
+          Authorization: `Bearer ${token}`,
           Accept: "application/json",
           ...(payload === undefined ? {} : { "Content-Type": "application/json" }),
         },
