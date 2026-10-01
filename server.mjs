@@ -8,7 +8,7 @@ const port = Number(process.env.PORT || 3000);
 // Only named API modules can be imported. This keeps private files outside the
 // static file server while allowing the same handlers to run on Vercel.
 const apiRoutes = new Set([
-  "account", "automation", "health", "intelligence", "lookup", "market",
+  "account", "automation", "customer-broker", "health", "intelligence", "lookup", "market",
   "operator-session", "options", "order", "research", "screener", "signal",
 ]);
 const mime = {
@@ -77,3 +77,4 @@ const server = http.createServer(async (req, res) => {
 server.listen(port, () => {
   process.stdout.write(`Stonk running at http://localhost:${port}\n`);
 });
+
