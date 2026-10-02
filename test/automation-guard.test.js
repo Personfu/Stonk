@@ -51,6 +51,13 @@ test("live automation fails closed when broker daily P&L is unavailable", async 
   assert.ok(result.calls.every((call) => call.method === "GET"));
 });
 
+test("live automation fails closed when broker last equity is null", async () => {
+  const result = await runAutomation({ status: "ACTIVE", options_trading_level: 3,
+    equity: "10000", last_equity: null, options_buying_power: "5000" });
+  assert.equal(result.status, 503);
+  assert.ok(result.calls.every((call) => call.method === "GET"));
+});
+
 test("live automation rejects an invalid risk cap before scanning or ordering", async () => {
   const result = await runAutomation(
     { status: "ACTIVE", options_trading_level: 3, equity: "10000", last_equity: "10000" },
