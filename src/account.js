@@ -155,7 +155,7 @@ async function loadBrokerStatus() {
     const result = await response.json().catch(() => null);
     if (requestId !== brokerRequestId || user?.id !== currentUserId) return;
     if (response.status === 503) {
-      showBrokerStatus("Brokerage activation pending", "STONK does not yet have production customer brokerage access. Your research account and watchlist remain available.");
+      showBrokerStatus("Brokerage status unavailable", "Brokerage status cannot be verified right now. Funding and trading are unavailable; your research account and watchlist remain available.");
     } else if (response.status === 401) {
       showBrokerStatus("Verify your sign-in", "Confirm your email and sign in again to check brokerage status.");
     } else if (!response.ok || result?.ok !== true) {
