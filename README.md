@@ -41,6 +41,8 @@ The Account page uses Supabase email authentication for private, cloud-saved tic
 
 An isolated Alpaca Broker API transport covers account status, Plaid processor-token ACH linking, deposits, and account-scoped equity limit orders. A server-only customer-account binding and a read-only `/api/customer-broker` status route now exist; neither opens customer accounts nor moves money or submits trades. The binding table has row level security, grants no browser-role access, and currently has no linked accounts. The remaining provider and application gates are tracked in [public customer brokerage launch](docs/public-broker-launch.md). Broker API correspondent credentials must never be replaced with the desk's single-owner Trading API keys.
 
+The signed-in Account page checks that read-only route and shows the broker's actual account state when one is linked. It distinguishes simulated sandbox accounts, pending reviews, broker restrictions, and service outages. It never presents a deposit or order control as live when the production integration is absent.
+
 ## Live trading desk
 
 The current broker adapter is **Alpaca live trading**, not Robinhood. The desk displays market movers, most-active names, quote data, SEC EDGAR filings and Company Facts, Alpaca news and corporate actions, optional FRED macro observations, live account state, and an options lab. The options lab normalizes contract snapshots and Greeks, evaluates long options and defined-risk debit spreads, and ranks research candidates using liquidity, payoff shape, and the underlying's 5-day/20-day trend. Its score is research priority, not expected return or probability of profit.
@@ -60,4 +62,5 @@ The requested Pump SDKs and Solana helpers are isolated in `crypto/`; the stock 
 ## Deployment and limits
 
 The interface is static and the `api/` files are Vercel functions. Customer watchlists have per-user access rules; public live market-data display still needs a licensed feed and appropriate rate limits. Do not put a personal market-data key on an anonymous public terminal. The repository's live-only execution controls require a deliberate single-owner operator setup. Market screens and options scores have not been validated with out-of-sample forward results, transaction costs, fills, or broker telemetry. No scanner can promise the most profitable day or one-week trade.
+
 
