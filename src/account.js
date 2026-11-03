@@ -12,6 +12,7 @@ let watchlist = [];
 let watchlistReady = false;
 let refreshPromise = null;
 let recoveryMode = false;
+let brokerRequestId = 0;
 
 class RequestError extends Error {
   constructor(message, status, code) {
@@ -56,6 +57,9 @@ function saveSession(value) {
 }
 
 function clearSession() {
+  brokerRequestId++;
+  setBusy($("#brokerRefresh"), false);
+  showBrokerStatus("Brokerage activation pending", "Your research account is ready. Customer funding and trading require a separately approved broker account.");
   session = null;
   user = null;
   watchlist = [];
@@ -129,6 +133,52 @@ function renderAccount() {
     $("#accountEmail").textContent = user.email || "Email unavailable";
     $("#watchCount").textContent = watchlistReady ? String(watchlist.length) : "—";
   }
+}
+
+function showBrokerStatus(title, detail) {
+  $("#availability-title").textContent = title;
+  $("#brokerDetails").textContent = detail;
+}
+
+async function loadBrokerStatus() {
+  if (!user || !session) return;
+  const requestId = ++brokerRequestId;
+  const currentUserId = user.id;
+  const button = $("#brokerRefresh");
+  setBusy(button, true, "Checking…");
+  try {
+    const token = await accessToken();
+    const response = await fetch("/api/customer-broker", {
+      headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+      credentials: "omit", cache: "no-store", signal: AbortSignal.timeout(12000),
+    });
+    const result = await response.json().catch(() => null);
+    if (requestId !== brokerRequestId || user?.id !== currentUserId) return;
+    if (response.status === 503) {
+      showBrokerStatus("Brokerage activation pending", "STONK does not yet have production customer brokerage access. Your research account and watchlist remain available.");
+    } else if (response.status === 401) {
+      showBrokerStatus("Verify your sign-in", "Confirm your email and sign in again to check brokerage status.");
+    } else if (!response.ok || result?.ok !== true) {
+      showBrokerStatus("Status check failed", "Brokerage status could not be checked. Try again shortly; no money or order was submitted.");
+    } else if (result.state === "not_opened") {
+      showBrokerStatus("No broker account linked", "This is a research account. Funding and trading will require a separately approved customer brokerage account.");
+    } else if (result.environment === "sandbox") {
+      showBrokerStatus("Sandbox account only", "This account uses simulated brokerage data. It cannot accept real deposits or place live customer trades.");
+    } else if (result.state === "pending") {
+      showBrokerStatus("Broker review in progress", `The broker reports ${result.status || "a pending status"}. Funding and trading are closed until the account is approved and active.`);
+    } else if (result.state === "active" && result.environment === "live") {
+      const restrictions = [result.transfersBlocked && "transfers", result.tradingBlocked && "trading"].filter(Boolean);
+      showBrokerStatus("Broker account active", restrictions.length
+        ? `The broker currently blocks ${restrictions.join(" and ")}. STONK's public funding and order controls are still awaiting launch approval.`
+        : "The broker account is active. STONK's public funding and order controls are still awaiting launch approval.");
+    } else {
+      showBrokerStatus("Brokerage activation pending", "No live customer trading access is available for this account.");
+    }
+  } catch {
+    if (requestId === brokerRequestId && user?.id === currentUserId) {
+      showBrokerStatus("Status check failed", "Brokerage status could not be checked. Try again shortly; no money or order was submitted.");
+    }
+  } finally { if (requestId === brokerRequestId) setBusy(button, false); }
 }
 
 async function refreshSession() {
@@ -338,6 +388,7 @@ async function signIn(event) {
     await verifyUser();
     renderAccount();
     setNotice("#globalNotice", "Signed in. Your watchlist is ready for research.", "success");
+    void loadBrokerStatus();
     await loadWatchlist();
   } catch (error) {
     password.value = "";
@@ -503,6 +554,7 @@ async function restore() {
         setNotice("#authNotice", "Your reset link is verified. Choose a new password below.", "success");
       } else {
         setNotice("#globalNotice", "Email confirmed. Your account is ready.", "success");
+        void loadBrokerStatus();
         await loadWatchlist();
       }
     } catch (error) { showSessionError(error); }
@@ -513,6 +565,7 @@ async function restore() {
   try {
     await verifyUser();
     renderAccount();
+    void loadBrokerStatus();
     await loadWatchlist();
   } catch (error) { showSessionError(error); }
 }
@@ -530,4 +583,6 @@ $("#recoveryForm").addEventListener("submit", sendRecovery);
 $("#resetForm").addEventListener("submit", updatePassword);
 $("#watchForm").addEventListener("submit", addTicker);
 $("#logoutButton").addEventListener("click", signOut);
+$("#brokerRefresh").addEventListener("click", loadBrokerStatus);
 restore();
+
