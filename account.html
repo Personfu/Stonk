@@ -108,7 +108,12 @@
 
         <aside class="account-rail">
           <section class="identity-card panel" aria-labelledby="identity-title"><span class="eyebrow">SIGNED IN AS</span><div class="identity-avatar" aria-hidden="true">S</div><h2 id="identity-title">Research profile</h2><p id="accountEmail">—</p><span class="session-indicator"><i aria-hidden="true"></i> PRIVATE SESSION</span></section>
-          <section class="availability-card panel" aria-labelledby="availability-title"><span class="eyebrow">ACCOUNT STATUS</span><h2 id="availability-title">Research access is ready.</h2><p>Funding, live balances, holdings, and trading are unavailable in customer accounts until each user can connect and authorize their own broker securely.</p><a href="/">Explore stock map <span aria-hidden="true">↗</span></a></section>
+          <section class="availability-card panel" aria-labelledby="availability-title">
+            <span class="eyebrow">BROKERAGE STATUS</span>
+            <h2 id="availability-title">Brokerage activation pending</h2>
+            <p id="brokerDetails" role="status" aria-live="polite">Your research account is ready. Customer funding and trading require a separately approved broker account.</p>
+            <button id="brokerRefresh" class="secondary-button" type="button">Refresh status</button>
+          </section>
           <p class="rail-footnote">A watchlist is a research aid, not a recommendation or a portfolio. Prices and company details can change.</p>
         </aside>
       </div>
@@ -118,3 +123,4 @@
   <script type="module" src="/src/account.js"></script>
 </body>
 </html>
+
