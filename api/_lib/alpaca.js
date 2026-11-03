@@ -45,7 +45,32 @@ export async function latestNews(symbol,limit=20){const q=new URLSearchParams({s
 export async function corporateActions(symbol,start,end){const q=new URLSearchParams({symbols:symbol,data_quality:"complete"});if(start)q.set("start",start);if(end)q.set("end",end);return market("/v1/corporate-actions?"+q)}
 export async function optionSnapshots(symbol,params={}){const q=new URLSearchParams({feed:optionFeed(),limit:"1000",...Object.fromEntries(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!==""))});let token="";const snapshots={};for(let page=0;page<5;page++){if(token)q.set("page_token",token);const d=await market("/v1beta1/options/snapshots/"+encodeURIComponent(symbol)+"?"+q);Object.assign(snapshots,d?.snapshots||{});token=d?.next_page_token||"";if(!token)break}return snapshots}
 export async function optionContracts(symbol,params={}){const q=new URLSearchParams({underlying_symbols:symbol,status:"active",limit:"10000",...Object.fromEntries(Object.entries(params).filter(([,v])=>v!==undefined&&v!==null&&v!==""))});let token="";const out=[];for(let page=0;page<5;page++){if(token)q.set("page_token",token);const d=await trading("/v2/options/contracts?"+q);out.push(...(d?.option_contracts||[]));token=d?.next_page_token||"";if(!token)break}return out}
-export async function accountSummary(){const a=await trading("/v2/account");const n=v=>Number.isFinite(Number(v))?Number(v):null;return{status:a.status,currency:a.currency,equity:n(a.equity),cash:n(a.cash),buyingPower:n(a.buying_power),optionsBuyingPower:n(a.options_buying_power),optionsApprovedLevel:a.options_approved_level,optionsTradingLevel:a.options_trading_level,lastEquity:n(a.last_equity),dayPnL:n(a.equity)!=null&&n(a.last_equity)!=null?n(a.equity)-n(a.last_equity):null,patternDayTrader:a.pattern_day_trader,tradingBlocked:a.trading_blocked,transfersBlocked:a.transfers_blocked,mode:"live"}}
+export async function accountSummary() {
+  const account = await trading("/v2/account");
+  const numberOrNull = (value) => {
+    if (value === null || value === undefined || value === "") return null;
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : null;
+  };
+  const equity = numberOrNull(account.equity);
+  const lastEquity = numberOrNull(account.last_equity);
+  return {
+    status: account.status,
+    currency: account.currency,
+    equity,
+    cash: numberOrNull(account.cash),
+    buyingPower: numberOrNull(account.buying_power),
+    optionsBuyingPower: numberOrNull(account.options_buying_power),
+    optionsApprovedLevel: account.options_approved_level,
+    optionsTradingLevel: account.options_trading_level,
+    lastEquity,
+    dayPnL: equity !== null && lastEquity !== null ? equity - lastEquity : null,
+    patternDayTrader: account.pattern_day_trader,
+    tradingBlocked: account.trading_blocked,
+    transfersBlocked: account.transfers_blocked,
+    mode: "live",
+  };
+}
 export async function clock(){return trading("/v2/clock")}
 export async function openOrders(){return trading("/v2/orders?status=open&limit=500&nested=true")}
 export async function positions(){return trading("/v2/positions")}
